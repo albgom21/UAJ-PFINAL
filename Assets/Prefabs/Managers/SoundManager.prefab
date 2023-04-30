@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4117633157147397900
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4117633157147397901}
+  - component: {fileID: 4117633157147397898}
+  m_Layer: 0
+  m_Name: SoundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4117633157147397901
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4117633157147397900}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4117633157147397898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4117633157147397900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64e200833b394ae4fad8d82e153c4512, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FXSoundsPool:
+  - {fileID: 8300000, guid: 8ed254c476489074b9d8e0d7359243d4, type: 3}
+  - {fileID: 8300000, guid: b0e42d69118a10b4f9b76a47b8040214, type: 3}
+  - {fileID: 8300000, guid: 55f0f63a99ddc3a4780ee1c2e6d8b2d6, type: 3}
+  - {fileID: 8300000, guid: 7f4e81d9b419f584d973ea8aa583d9c6, type: 3}
+  - {fileID: 8300000, guid: c0220368b01520d438a00e95682dc234, type: 3}
+  - {fileID: 8300000, guid: e4905e5fdfa23ca4dbf71cf4dd98d35d, type: 3}
+  - {fileID: 8300000, guid: c74b193ce5ea82d4982931144b90a440, type: 3}
+  - {fileID: 8300000, guid: f15a7750ba34ad44ab7d5009173b98c7, type: 3}
+  - {fileID: 8300000, guid: dc64fb3a72139874c8ec457498a91721, type: 3}
+  - {fileID: 8300000, guid: d5fab2318ad75504ca9afb51ff15bb13, type: 3}
+  - {fileID: 8300000, guid: 790ce00df5381384989cdf82b374de1f, type: 3}
+  - {fileID: 8300000, guid: 6f4109bdc2cf0094eb7a59df60994ca6, type: 3}
+  - {fileID: 8300000, guid: 2fa6f4939239dd544a9995d5c1111809, type: 3}
+  musicAM: {fileID: 24100000, guid: 0747872677264ce41bc87303b73545e8, type: 2}
+  fxSoundAM: {fileID: 24100000, guid: 25f591446ccdf69498b6aa25871123fd, type: 2}
+  soundSettings:
+    fxVolume_: 0
+    musicVolume_: 0
