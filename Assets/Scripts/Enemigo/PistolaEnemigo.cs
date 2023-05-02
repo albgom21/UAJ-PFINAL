@@ -16,8 +16,9 @@ public class PistolaEnemigo : MonoBehaviour
 
     public void Shoot()
     {
-        Instantiate(bala, pistola.position, Quaternion.Euler(transform.localEulerAngles)).GetComponent<Bullet>().SetBounce(0);
-        bala.GetComponent<Bullet>()._Traker_SetPistola(this);
+        GameObject balaInst = Instantiate(bala, pistola.position, Quaternion.Euler(transform.localEulerAngles));
+        balaInst.GetComponent<Bullet>().SetBounce(0);
+        balaInst.GetComponent<Bullet>()._Traker_SetPistola(this);
         fire.Play();
     }
 }

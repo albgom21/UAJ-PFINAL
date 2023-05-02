@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using P3;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,7 +16,7 @@ public class Pistola : MonoBehaviour
     private Animator animator;
     private AudioSource fire;
 
-    private int layerMask ;
+    private int layerMask;
 
     private void Start()
     {
@@ -26,7 +27,7 @@ public class Pistola : MonoBehaviour
     }
     public void Shoot()
     {
-        if (enabled && (!GameManager.gmInstance_.EmptyGun() || GameManager.gmInstance_.Uammo ) )
+        if (enabled && (!GameManager.gmInstance_.EmptyGun() || GameManager.gmInstance_.Uammo))
         {
             animator.SetTrigger("Ataque");
             GameManager.gmInstance_.Shoot();
@@ -40,8 +41,9 @@ public class Pistola : MonoBehaviour
         {
             line_.enabled = laser;
             laser_ = laser;
+            if (laser) Tracker.TrackEvent(new aimingEvent());
+            else Tracker.TrackEvent(new notAimingEvent());
         }
-
     }
 
     private void Update()
@@ -52,12 +54,12 @@ public class Pistola : MonoBehaviour
             Vector3[] posHit = new Vector3[3];
 
             posHit[0] = pistola.position;
-            hit = Physics2D.Raycast(pistola.position, pistola.up , 100, layerMask);
+            hit = Physics2D.Raycast(pistola.position, pistola.up, 100, layerMask);
             posHit[1] = hit.point;
-            
+
             Vector3 angleHit = Vector3.Reflect(pistola.up, hit.normal);
-            
-            hit = Physics2D.Raycast(hit.point, angleHit , 100, layerMask);
+
+            hit = Physics2D.Raycast(hit.point, angleHit, 100, layerMask);
             posHit[2] = hit.point;
 
             line_.SetPositions(posHit);

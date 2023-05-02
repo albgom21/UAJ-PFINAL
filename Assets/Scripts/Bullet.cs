@@ -24,12 +24,11 @@ public class Bullet : MonoBehaviour
             collision.gameObject.GetComponent<Enemigo>().Death();
             Destroy(gameObject);
         }
-        else if (collision.gameObject.tag == "Player" )
+        else if (collision.gameObject.tag == "Player")
         {
-            Tracker.TrackEvent(new enemyKillEvent(_tracker_pistola.transform.position.x, _tracker_pistola.transform.position.y));
-            
+            if (_tracker_pistola != null)
+                Tracker.TrackEvent(new enemyKillEvent(_tracker_pistola.transform.position.x, _tracker_pistola.transform.position.y));
             collision.gameObject.GetComponent<PlayerController>().Die();
-
             Destroy(gameObject);
         }
         if (bounces_ == 0) Destroy(gameObject);
