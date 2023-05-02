@@ -106,7 +106,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5668069761414816657}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.05, y: 0.15, z: 0}
+  m_LocalPosition: {x: 0.05, y: 0.18, z: 0}
   m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_Children: []
   m_Father: {fileID: 5668069761844117322}
@@ -385,7 +385,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -49356369
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: b3756dd0183e75245987db9b72148e7a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -913,11 +913,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5668069761844117322}
     m_Modifications:
-    - target: {fileID: 1952326614100929029, guid: a8dac9fa221917d43a49e5584fd05bc3,
-        type: 3}
-      propertyPath: m_Name
-      value: Daga
-      objectReference: {fileID: 0}
     - target: {fileID: 2798609365084612500, guid: a8dac9fa221917d43a49e5584fd05bc3,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -972,6 +967,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952326614100929029, guid: a8dac9fa221917d43a49e5584fd05bc3,
+        type: 3}
+      propertyPath: m_Name
+      value: Daga
       objectReference: {fileID: 0}
     - target: {fileID: 2728236546974226059, guid: a8dac9fa221917d43a49e5584fd05bc3,
         type: 3}

@@ -23,6 +23,9 @@ public class PlayerController : MonoBehaviour
     private AudioSource walking;
     private float lastDir = 0;
 
+    private bool _tracker_muertePorLaser;
+
+
     void Start()
     {
         gun = GetComponent<Pistola>();
@@ -68,7 +71,13 @@ public class PlayerController : MonoBehaviour
                 fov.SetOrigin(transform.position);
             }
             if (Input.GetButtonDown("Use")) Tracker.TrackEvent(new playerInteractEvent(transform.position.x, transform.position.y));
-            if (Input.GetMouseButtonDown(0)) Tracker.TrackEvent(new playerAttackEvent(transform.position.x, transform.position.y));
+            if (Input.GetMouseButtonDown(0))
+            {
+                if (gameObject.GetComponent<CambioArma>()._Tracker_GetWeapon())
+                    Tracker.TrackEvent(new playerAttackEvent(transform.position.x, transform.position.y, playerAttackEvent.Weapon.KNIFE));
+                else
+                    Tracker.TrackEvent(new playerAttackEvent(transform.position.x, transform.position.y, playerAttackEvent.Weapon.PISTOL));
+            }
         }
     }
 
@@ -140,6 +149,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!GameManager.gmInstance_.TGM)
         {
+            //Tracker.TrackEvent(new playerDeadEvent(transform.position.x, transform.position.y);
             Pistola pistola = GetComponent<Pistola>();
             gameObject.GetComponent<SpriteRenderer>().color = Color.gray;
             walking.Stop();
