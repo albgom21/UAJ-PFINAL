@@ -23,9 +23,9 @@ public class Bullet : MonoBehaviour
         }
         else if (collision.gameObject.tag == "Player" )
         {
-            collision.gameObject.GetComponent<PlayerController>().Die();
-
             Tracker.TrackEvent(new enemyKillEvent(_tracker_pistola.transform.position.x, _tracker_pistola.transform.position.y));
+            
+            collision.gameObject.GetComponent<PlayerController>().Die();
 
             Destroy(gameObject);
         }
