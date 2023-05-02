@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using P3;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,6 +25,8 @@ public class Daga : MonoBehaviour
         Enemigo e = collision.gameObject.GetComponent<Enemigo>();
         if (e)
         {
+            Transform playerTr = GameManager.gmInstance_.GetPlayerTransform();
+            Tracker.TrackEvent(new playerKillEvent(playerTr.position.x, playerTr.position.y, playerKillEvent.Weapon.KNIFE));
             e.Death();
         }
     }

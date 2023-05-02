@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using P3;
+using System.Numerics;
 
 public class Bullet : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class Bullet : MonoBehaviour
     {
         if (collision.gameObject.tag == "Enemy")
         {
+            Transform playerTr = GameManager.gmInstance_.GetPlayerTransform();
+            Tracker.TrackEvent(new playerKillEvent(playerTr.position.x, playerTr.position.y, playerKillEvent.Weapon.PISTOL));
             collision.gameObject.GetComponent<Enemigo>().Death();
             Destroy(gameObject);
         }
