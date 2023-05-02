@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using P3;
 
 public class Enemigo : MonoBehaviour
 {
@@ -151,6 +152,7 @@ public class Enemigo : MonoBehaviour
     {
         steps.Stop();
         AudioSource.PlayClipAtPoint(EnemyVoicePool[7], transform.position);
+        Tracker.TrackEvent(new EnemyDeadEvent(transform.position.x, transform.position.y));
         Destroy(gameObject);
     }
     private void OnDestroy()

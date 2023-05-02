@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using P3;
 
 public class CambioArma : MonoBehaviour
 {
@@ -27,6 +28,7 @@ public class CambioArma : MonoBehaviour
             daga.enabled = !daga.enabled;
             pistola.enabled = !pistola.enabled;
             _tracker_dagaEquipada = !_tracker_dagaEquipada;
+
             GameManager.gmInstance_.SetWeapon(daga.enabled);
         }
     }

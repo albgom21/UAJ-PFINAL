@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using P3;
 
 public class Bullet : MonoBehaviour
 {
     private int bounces_ = 1;
+    private PistolaEnemigo _tracker_pistola; //Pistola que ha disparado la bala. Su posición es la del enemigo por lo que sirve para el evento enemyKill
 
     void Start()
     {
@@ -22,6 +24,9 @@ public class Bullet : MonoBehaviour
         else if (collision.gameObject.tag == "Player" )
         {
             collision.gameObject.GetComponent<PlayerController>().Die();
+
+            Tracker.TrackEvent(new enemyKillEvent(_tracker_pistola.transform.position.x, _tracker_pistola.transform.position.y));
+
             Destroy(gameObject);
         }
         if (bounces_ == 0) Destroy(gameObject);
@@ -32,5 +37,10 @@ public class Bullet : MonoBehaviour
     public void SetBounce(int bounces)
     {
         bounces_ = bounces;
+    }
+
+    public void _Traker_SetPistola(PistolaEnemigo pistola)
+    {
+        _tracker_pistola = pistola;
     }
 }
