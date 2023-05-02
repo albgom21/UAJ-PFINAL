@@ -149,7 +149,14 @@ public class PlayerController : MonoBehaviour
     {
         if (!GameManager.gmInstance_.TGM)
         {
-            //Tracker.TrackEvent(new playerDeadEvent(transform.position.x, transform.position.y);
+            if (_tracker_muertePorLaser)
+                Tracker.TrackEvent(new playerDeadEvent(transform.position.x, transform.position.y, playerDeadEvent.TypeDead.LASER));
+            else
+            {
+                _tracker_muertePorLaser = false;
+                Tracker.TrackEvent(new playerDeadEvent(transform.position.x, transform.position.y, playerDeadEvent.TypeDead.ENEMY));
+            }
+
             Pistola pistola = GetComponent<Pistola>();
             gameObject.GetComponent<SpriteRenderer>().color = Color.gray;
             walking.Stop();
@@ -163,6 +170,8 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(PlayerDeathSound());
         }
     }
+
+    public void _Tracker_SetDeathType() { _tracker_muertePorLaser = true; }
 
     private IEnumerator PlayerDeathSound()
     {

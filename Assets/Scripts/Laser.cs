@@ -52,6 +52,7 @@ public class Laser : MonoBehaviour
         if (detectorJugador)
         {
             laser.Stop();
+            detectorJugador._Tracker_SetDeathType();
             detectorJugador.Die();
         }    
     }
