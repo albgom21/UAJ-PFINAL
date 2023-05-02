@@ -560,4 +560,9 @@ public class GameManager : MonoBehaviour
     }
 
     /* -------------------- */
+
+    public int _Tracker_GetAmmo()
+    {
+        return ammo_;
+    }
 }

@@ -28,10 +28,19 @@ public class CambioArma : MonoBehaviour
             daga.enabled = !daga.enabled;
             pistola.enabled = !pistola.enabled;
             _tracker_dagaEquipada = !_tracker_dagaEquipada;
-
+            _Tracker_ChangeWeaponEvent();
             GameManager.gmInstance_.SetWeapon(daga.enabled);
         }
     }
 
     public bool _Tracker_GetWeapon() { return _tracker_dagaEquipada; }
+
+    private void _Tracker_ChangeWeaponEvent()
+    {
+        changeWeaponEvent.Weapon weapon;
+        if (_tracker_dagaEquipada) weapon = changeWeaponEvent.Weapon.KNIFE;
+        else weapon = changeWeaponEvent.Weapon.PISTOL;
+
+        Tracker.TrackEvent(new changeWeaponEvent(GameManager.gmInstance_._Tracker_GetAmmo(), weapon));
+    }
 }
