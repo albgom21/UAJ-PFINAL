@@ -70,7 +70,6 @@ public class PlayerController : MonoBehaviour
                 }
                 fov.SetOrigin(transform.position);
             }
-            if (Input.GetButtonDown("Use")) Tracker.TrackEvent(new playerInteractEvent(transform.position.x, transform.position.y));
             if (Input.GetMouseButtonDown(0))
             {
                 if (gameObject.GetComponent<CambioArma>()._Tracker_GetWeapon())
@@ -207,14 +206,7 @@ public class PlayerController : MonoBehaviour
         Puerta door = collision.GetComponent<Puerta>();
         bool use = Input.GetButtonDown("Use");
         if (door && use)
-        {
             door.MovPuerta(transform);
-        }
-        FirstDoor fd = collision.GetComponent<FirstDoor>();
-        if (fd && use)
-        {
-            fd.OpenFirstDoor();
-        }
     }
     public void SetLaser(bool laser_)
     {
