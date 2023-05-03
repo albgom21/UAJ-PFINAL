@@ -10,7 +10,7 @@ public class Enemigo : MonoBehaviour
     [SerializeField]
     private float fovSet = 90f, limit = 5f, rateOfFire = 0.5f;
     [SerializeField]
-    private Material fovMatPat = null, fovMatAlerted = null, fovMatAtacking = null;
+    private Material fovMatPat = null, fovMatAlerted = null, fovMatAtacking = null, fovMatTrans = null;
     [SerializeField]
     private string layer_ = "";
     [SerializeField]
@@ -52,11 +52,11 @@ public class Enemigo : MonoBehaviour
             pulse = GameManager.gmInstance_.createPulse();
             pulse.SetEnemy(transform);
             pulse.name = "Pulse" + this.name;
-            //fov = GameManager.gmInstance_.createFieldofView();
-            //fov.name = "FieldOfView" + this.name;
-            //fov.SetInstance(limit, fovSet);
-            //fov.gameObject.layer = gameObject.layer;
-            //fov.gameObject.layer = this.gameObject.layer;
+            fov = GameManager.gmInstance_.createFieldofView();
+            fov.name = "FieldOfView" + this.name;
+            fov.SetInstance(limit, fovSet);
+            fov.gameObject.layer = gameObject.layer;
+            fov.gameObject.layer = this.gameObject.layer;
             SetPulseState(false);
         }
         if (SoundManager.smInstance_)
@@ -212,11 +212,11 @@ public class Enemigo : MonoBehaviour
             switch (state)
             {
                 case State.Patrolling:
-                    fov.setMaterial(fovMatPat);
+                    fov.setMaterial(fovMatTrans);
                     break;
                 case State.Alerted:
                     StartCoroutine(ChasePlayer());
-                    fov.setMaterial(fovMatAlerted);
+                    fov.setMaterial(fovMatTrans);
                     break;
                 case State.Lost:
                     StartCoroutine(LostPlayer());
@@ -224,7 +224,7 @@ public class Enemigo : MonoBehaviour
                 case State.Atacking:
                     if (state_ == State.Patrolling) PlayEnemyVoice();
                     StartCoroutine(AttackPlayer());
-                    fov.setMaterial(fovMatAtacking);
+                    fov.setMaterial(fovMatTrans);
                     break;
             }
             state_ = state;
