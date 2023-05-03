@@ -12,13 +12,17 @@ public class Laser : MonoBehaviour
     private float ratio = 2f;
     private SpriteRenderer laserRenderer;
     private BoxCollider2D coll;
+    [SerializeField]
     private AudioSource laser;
+    [SerializeField]
+    private AudioSource laserEarly;
+    [SerializeField]
+    private LineRenderer laserE;
 
     void Start()
     {
         laserRenderer = GetComponent<SpriteRenderer>();
         coll = GetComponent<BoxCollider2D>();
-        laser = GetComponent<AudioSource>();
         gameObject.layer = LayerMask.NameToLayer(layer_);
         if (intermitencia) StartCoroutine(LaserIntermitente());
         else laser.Play();
@@ -35,6 +39,11 @@ public class Laser : MonoBehaviour
 
     IEnumerator LaserIntermitente()
     {
+        laserEarly.Play();
+        laserE.enabled = true;
+        yield return new WaitForSeconds(ratio);
+        laserEarly.Stop();
+        laserE.enabled = false;
         coll.enabled = true;
         laserRenderer.enabled = true;
         laser.Play();

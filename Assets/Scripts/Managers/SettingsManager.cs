@@ -39,7 +39,7 @@ public class SettingsManager : MonoBehaviour
             gameSettings = new SaveManager.SettingsSave
             {
                 fxVolume_ = 5,
-                musicVolume_ = 1,
+                musicVolume_ = -5,
                 controller_ = false,
                 cheats_ = false
             };

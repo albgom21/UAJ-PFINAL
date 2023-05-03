@@ -52,11 +52,11 @@ public class Enemigo : MonoBehaviour
             pulse = GameManager.gmInstance_.createPulse();
             pulse.SetEnemy(transform);
             pulse.name = "Pulse" + this.name;
-            fov = GameManager.gmInstance_.createFieldofView();
-            fov.name = "FieldOfView" + this.name;
-            fov.SetInstance(limit, fovSet);
-            fov.gameObject.layer = gameObject.layer;
-            fov.gameObject.layer = this.gameObject.layer;
+            //fov = GameManager.gmInstance_.createFieldofView();
+            //fov.name = "FieldOfView" + this.name;
+            //fov.SetInstance(limit, fovSet);
+            //fov.gameObject.layer = gameObject.layer;
+            //fov.gameObject.layer = this.gameObject.layer;
             SetPulseState(false);
         }
         if (SoundManager.smInstance_)
