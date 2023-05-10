@@ -1,0 +1,12 @@
+[{"sessionID":"2eeabd44a048c1860fa6f453ba75f99a10aa4bd1fbf17b780ecb4a0cfc4eba6c","tipo":"INI_SESSION","timestamp":1683734337},
+{"lvlID":2,"tipo":"INI_LVL","timestamp":1683734338},
+{"posX":-22.8204021,"posY":5.306732,"weapon":"KNIFE","tipo":"POS_PLAYER_ATTACK","timestamp":1683734343},
+{"posX":-22.93487,"posY":5.363653,"weapon":"KNIFE","tipo":"POS_PLAYER_KILL","timestamp":1683734343},
+{"posX":-23.6900272,"posY":4.818808,"tipo":"POS_ENEMY_DEAD","timestamp":1683734343},
+{"posX":-13.6746731,"posY":-4.441277,"weapon":"KNIFE","tipo":"POS_PLAYER_ATTACK","timestamp":1683734349},
+{"posX":-13.283987,"posY":-4.11931038,"weapon":"KNIFE","tipo":"POS_PLAYER_KILL","timestamp":1683734350},
+{"posX":-13.5915432,"posY":-3.2691133,"tipo":"POS_ENEMY_DEAD","timestamp":1683734350},
+{"posX":-12.8702068,"posY":-3.56700921,"weapon":"KNIFE","tipo":"POS_PLAYER_ATTACK","timestamp":1683734350},
+{"posX":-3.03178167,"posY":-0.261161268,"tipo":"POS_ENEMY_KILL","timestamp":1683734353},
+{"posX":-4.73283672,"posY":0.616900861,"dead":"ENEMY","tipo":"POS_PLAYER_DEAD","timestamp":1683734353},
+{"sessionID":"2eeabd44a048c1860fa6f453ba75f99a10aa4bd1fbf17b780ecb4a0cfc4eba6c","tipo":"END_SESSION","timestamp":1683734355}]

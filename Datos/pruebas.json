@@ -1,0 +1,30 @@
+[
+    {
+        "posX": -20.6778374,
+        "posY": 10.1907406,
+        "dead": "ENEMY",
+        "tipo": "POS_PLAYER_DEAD",
+        "timestamp": 1683666016
+    },
+    {
+        "posX": -21.5483334,
+        "posY": 11.2907406,
+        "dead": "TEAM",
+        "tipo": "POS_PLAYER_DEAD",
+        "timestamp": 1683666022
+    },
+    {
+        "posX": -23.5788374,
+        "posY": 14.1907406,
+        "dead": "ENEMY",
+        "tipo": "POS_PLAYER_DEAD",
+        "timestamp": 1683666028
+    },
+    {
+        "posX": -20.6788374,
+        "posY": 10.1907406,
+        "dead": "ENEMY",
+        "tipo": "POS_PLAYER_DEAD",
+        "timestamp": 1683666034
+    }
+]
