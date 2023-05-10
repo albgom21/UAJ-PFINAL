@@ -31,7 +31,12 @@ namespace P3
             while (events.Count > 0)
             {
                 te = events.Dequeue();                          // Obtener y quitar evento de la cola
-                eventSerialized = serializer.Serialize(te);     // Serializar el evento
+                if(te.tipo == TrackerEvent.EventType.INI_SESSION)
+                    eventSerialized = "[" + serializer.Serialize(te) + ",";     // Serializar el evento
+                else if(te.tipo == TrackerEvent.EventType.END_SESSION)
+                    eventSerialized = serializer.Serialize(te) + "]";     // Serializar el evento
+                else eventSerialized = serializer.Serialize(te) + ",";     // Serializar el evento
+
                 try
                 {
                     StreamWriter writer = new StreamWriter(path, true);  // Escribir en la ruta el evento
