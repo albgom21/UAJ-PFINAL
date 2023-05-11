@@ -250,8 +250,6 @@ def main():
 
     # Mostrar la figura
     plt.show()
-   
-
 
     # Creamos una lista de eventos de prueba
     eventos = [
@@ -270,6 +268,7 @@ def main():
     # Creamos una lista de posiciones y otra de colores para cada evento
     x_values = [e["timestamp"] for e in eventos]
     y_values = [e["weapon"].lower() for e in eventos]
+    ammo_values = [e["ammo"] for e in eventos]
 
     aux = x_values[0]
     x_values_end = x_values.copy()
@@ -278,11 +277,11 @@ def main():
     #Dependiendo de y_values, se le asigna un color a colors1
     for x in range(len(y_values)):
         if y_values[x] == 'pistol':
-            colors1[x] = 'red'
+            colors1[x] = 'Pistola'
         elif y_values[x] == 'rifle':
-            colors1[x] = 'blue'
+            colors1[x] = 'Rifle'
         elif y_values[x] == 'shotgun':
-            colors1[x] = 'green'
+            colors1[x] = 'Escopeta'
         else:
             colors1[x] = 'black'
 
@@ -298,16 +297,21 @@ def main():
     #dar a auxdata los valores de x_values y y_values
     auxData['x_values'] = x_values
     auxData['time_end'] = x_values_end
-    auxData['weapon'] = y_values
-    auxData['colors1'] = colors1
+    auxData['Armas'] = y_values
+    auxData['Leyenda'] = colors1
+    auxData['ammo'] = ammo_values
 
     fig = px.timeline(auxData,
                     x_start='x_values',
                     x_end='time_end',
-                    y="weapon",
-                    color="colors1")
-    fig.show()
+                    y="Armas",
+                    text="ammo",
+                    color="Leyenda")
 
+    fig.update_layout(xaxis=dict(tickformat="%M:%Ss"))
+    fig.update_layout(font=dict(size=14))
+    fig.show()
+    
 main()
 
 
