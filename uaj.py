@@ -1,6 +1,9 @@
 import os
 import json
 import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+import plotly.express as px
 
 def main():
     # # Para leer todos los json de una carpeta
@@ -16,7 +19,7 @@ def main():
     #         # Hacer algo con el contenido del archivo
 
     # Leer datos de archivos json
-    with open('./Datos/BAVictor.json', 'r') as f:
+    with open('./Datos/BBNerea.json', 'r') as f:
         datos = json.load(f)
 
     eventos = {
@@ -166,6 +169,8 @@ def main():
 
     # Un timeline que recoja el uso de cada arma en el tiempo y con la información de la munición.
 
+
+
     # El número de asesinatos con cada arma y su ratio de efectividad (asesinatos/ataque).
     armas = ['CUCHILLO', 'PISTOLA']
     usos = [contUsoCuchillo, contUsoPistola]
@@ -212,7 +217,99 @@ def main():
         
     print("Distancias: ",distanciasMatarEne)
     
+    # Límites de posiciones dentro del juego
+    limiteXneg = -32.6041
+    limiteXpos = 42.9243546
+    limiteYneg = -33.3769646
+    limiteYpos = 23.59616
+    # Leer la imagen
+    img = plt.imread('mapa.png')
+
+    # Generar los datos del mapa de calor
+    muertes = [[e["posX"], e["posY"]] for e in eventos['POS_PLAYER_DEAD']]
+    x = [m[0] for m in muertes]
+    y = [m[1] for m in muertes]
+
+    # Crear la figura y los ejes
+    fig, ax = plt.subplots(figsize=(10, 10))
+
+    # Crear el mapa de calor
+    hb = ax.hexbin(x, y, gridsize=75, cmap='plasma', linewidths=.5, mincnt=1, alpha=0.95)
+
+    # Agregar la imagen como fondo
+    ax.imshow(img, extent=[limiteXneg, limiteXpos, limiteYneg, limiteYpos], aspect='auto',)
+
+    # Establecer la misma escala en ambas direcciones y ajustar los límites de los ejes
+    ax.set_aspect('equal')
+
+    ax.set_xlim([limiteXneg, limiteXpos])
+    ax.set_ylim([limiteYneg, limiteYpos])
+
+    # Agregar la barra de colores
+    cb = plt.colorbar(hb)
+
+    # Mostrar la figura
+    plt.show()
+   
+
+
+    # Creamos una lista de eventos de prueba
+    eventos = [
+        {"ammo": 5, "weapon": "PISTOL", "tipo": "CHANGE_WEAPON", "timestamp": 1683666076}, #0
+        {"ammo": 10, "weapon": "RIFLE", "tipo": "FIRE", "timestamp": 1683666081}, #1
+        {"ammo": 3, "weapon": "SHOTGUN", "tipo": "FIRE", "timestamp": 1683666090}, #2
+        {"ammo": 6, "weapon": "PISTOL", "tipo": "FIRE", "timestamp": 1683666100}, #3
+        {"ammo": 8, "weapon": "RIFLE", "tipo": "FIRE", "timestamp": 1683666110}, #4
+        {"ammo": 2, "weapon": "SHOTGUN", "tipo": "FIRE", "timestamp": 1683666115}, #5
+        {"ammo": 4, "weapon": "RIFLE", "tipo": "CHANGE_WEAPON", "timestamp": 1683666125}, #6
+    ]
+
+    # Ordenamos los eventos por timestamp
+    eventos = sorted(eventos, key=lambda e: e["timestamp"])
+
+    # Creamos una lista de posiciones y otra de colores para cada evento
+    x_values = [e["timestamp"] for e in eventos]
+    y_values = [e["weapon"].lower() for e in eventos]
+
+    aux = x_values[0]
+    x_values_end = x_values.copy()
+    colors1 = y_values.copy()
+
+    #Dependiendo de y_values, se le asigna un color a colors1
+    for x in range(len(y_values)):
+        if y_values[x] == 'pistol':
+            colors1[x] = 'red'
+        elif y_values[x] == 'rifle':
+            colors1[x] = 'blue'
+        elif y_values[x] == 'shotgun':
+            colors1[x] = 'green'
+        else:
+            colors1[x] = 'black'
+
+    for x in range(len(x_values)):
+        if x < len(x_values) - 1:
+            x_values_end[x] = pd.to_datetime(x_values[x + 1] - aux, format='%S')
+        else:
+            x_values_end[x] = pd.to_datetime(x_values[x] - aux, format='%S')
+        x_values[x] = pd.to_datetime(x_values[x] - aux, format='%S')
+
+    auxData = pd.DataFrame()
+
+    #dar a auxdata los valores de x_values y y_values
+    auxData['x_values'] = x_values
+    auxData['time_end'] = x_values_end
+    auxData['weapon'] = y_values
+    auxData['colors1'] = colors1
+
+    fig = px.timeline(auxData,
+                    x_start='x_values',
+                    x_end='time_end',
+                    y="weapon",
+                    color="colors1")
+    fig.show()
+
 main()
+
 
 #----------------------------EVENTOS DE LA TELEMETRÍA----------------------------
 # INI_SESSION
