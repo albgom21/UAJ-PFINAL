@@ -315,5 +315,3 @@ def grafica_dificultad_enemigos_laseres():
     ax[1].set_title('¿Por qué ha sentido el jugador más peligro? - BUILD B')
     ax[1].pie(frecuencias_build_B.values(), labels=etiquetas_build_B,autopct='%1.1f%%', startangle=90)
     plt.show()
-
-grafica_dificultad_enemigos_laseres()
