@@ -49,7 +49,7 @@ def grafica_municion():
     ax[0].set_title('Cantidad de munición a lo largo de los niveles')
     ax[0].pie(frecuencias.values(), labels=etiquetas,autopct='%1.1f%%', startangle=90)
     # Crear el gráfico de barras
-    ax[1].bar(frecuencias.keys(),  height=frecuencias.values())
+    ax[1].bar(etiquetas,  height=frecuencias.values())
     ax[1].set_xlabel('Abundancia')
     ax[1].set_ylabel('Número de personas')
     plt.show()
@@ -124,9 +124,9 @@ def grafica_apuntado_pistola():
         elif valor == 3:
             etiquetas_intuicion.append("3 algo intuitivo")
         elif valor == 4:
-            etiquetas_intuicion.append("4 muy intuitivo")
+            etiquetas_intuicion.append("4 bastante intuitivo")
         else:
-            etiquetas_intuicion.append("5 bastante intuitivo")
+            etiquetas_intuicion.append("5 muy intuitivo")
     for valor in frecuencias_frenetismo_ordenadas:
         if valor == 0:
             etiquetas_intuicion.append("0 nada frenético")
@@ -137,15 +137,19 @@ def grafica_apuntado_pistola():
         elif valor == 3:
             etiquetas_frenetismo.append("3 algo frenético")
         elif valor == 4:
-            etiquetas_frenetismo.append("4 muy frenético")
+            etiquetas_frenetismo.append("4 bastante frenético")
         else:
-            etiquetas_frenetismo.append("5 bastante frenético")
+            etiquetas_frenetismo.append("5 muy frenético")
         
     fig, ax = plt.subplots(2)
     ax[0].set_title('Intuición apuntado pistola')
-    ax[0].pie(frecuencias_intuicion.keys(), labels=etiquetas_intuicion, autopct='%1.1f%%', startangle=90)
+    ax[0].bar(etiquetas_intuicion,  height=frecuencias_intuicion.values())
+    ax[0].set_xlabel('Intuición')
+    ax[0].set_ylabel('Número de personas')    
     ax[1].set_title('Frenetismo apuntado pistola')
-    ax[1].pie(frecuencias_frenetismo.keys(), labels=etiquetas_frenetismo, autopct='%1.1f%%', startangle=90)
+    ax[1].bar(etiquetas_frenetismo,  height=frecuencias_frenetismo.values())
+    ax[1].set_xlabel('Frenetismo')
+    ax[1].set_ylabel('Número de personas')
     plt.show()
 
 def grafica_dificultad_enemigos():
@@ -176,7 +180,7 @@ def grafica_dificultad_enemigos():
         elif valor == "4":
             etiquetas_build_A.append("4 Mucha dificultad")
         else:
-            etiquetas_build_A.append("5 Difucltad extrema")
+            etiquetas_build_A.append("5 Dificultad extrema")
 
     for valor in frecuancias_build_B_ordenadas:
         if valor == "0":
@@ -190,15 +194,19 @@ def grafica_dificultad_enemigos():
         elif valor == "4":
             etiquetas_build_B.append("4 Mucha dificultad")
         else:
-            etiquetas_build_B.append("5 Difucltad extrema")
+            etiquetas_build_B.append("5 Dificultad extrema")
             
     fig, ax = plt.subplots(2)
 
     ax[0].set_title('¿Cuál ha sido la dificultad para eliminar enemigos? - BUILD A')
-    ax[0].pie(frecuencias_build_A.values(), labels=etiquetas_build_A,autopct='%1.1f%%', startangle=90)
+    ax[0].bar(etiquetas_build_A,  height=frecuencias_build_A.values())
+    ax[0].set_xlabel('Dificultad')
+    ax[0].set_ylabel('Número de personas')
     
     ax[1].set_title('¿Cuál ha sido la dificultad para eliminar enemigos? - BUILD B')
-    ax[1].pie(frecuencias_build_B.values(), labels=etiquetas_build_B,autopct='%1.1f%%', startangle=90)
+    ax[1].bar(etiquetas_build_B,  height=frecuencias_build_B.values())
+    ax[1].set_xlabel('Dificultad')
+    ax[1].set_ylabel('Número de personas')
     plt.show()
 
 def grafica_economizacion_municion():
@@ -315,3 +323,10 @@ def grafica_dificultad_enemigos_laseres():
     ax[1].set_title('¿Por qué ha sentido el jugador más peligro? - BUILD B')
     ax[1].pie(frecuencias_build_B.values(), labels=etiquetas_build_B,autopct='%1.1f%%', startangle=90)
     plt.show()
+grafica_municion()
+grafica_balance_armas()
+grafica_apuntado_pistola()
+grafica_dificultad_enemigos()
+grafica_economizacion_municion()
+grafica_frustracion_laser()
+grafica_dificultad_enemigos_laseres()
