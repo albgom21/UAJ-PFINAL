@@ -1,0 +1,16 @@
+N CAMBIOS DE ARMAS:  0
+Tiempo cuchillo:  730 s
+Tiempo pistola:  0 s
+USO DE CUCHILLO:  193
+USO DE PISTOLA:  0
+KILLS TOTALES:  60
+KILLS CON CUCHILLO:  57 Porcentaje:  95.0 %
+KILLS CON PISTOLA:  3 Porcentaje:  5.0 %
+KILLS DE ENEMIGOS:  23
+DEADS TOTALES:  26
+DEAD CON ENEMIGO:  23 Porcentaje:  88.46153846153845 %
+DEAD CON LASER:  3 Porcentaje:  11.538461538461538 %
+DEAD CON SUICIDIO:  3 Porcentaje:  0.0 %
+TIEMPO AIMING:  0 s
+Efectividad cuchillo: 29.533678756476682 %
+Efectividad pistola: 0 %

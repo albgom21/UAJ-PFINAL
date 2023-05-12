@@ -7,7 +7,7 @@ import plotly.express as px
 import matplotlib.ticker as ticker
 import numpy as np
 
-SAVE = False
+SAVE = True
 
 #____________METODOS PARA EXTRAER METRICAS____________
 
@@ -99,7 +99,7 @@ def tiempoUsoArmas(eventos):
 
 #____________METODOS PARA VISUALIZAR DATOS____________
 
-def heatMapDeads(eventos,tipoMuerte=None):
+def heatMapDeads(eventos,rutaSave,tipoMuerte=None):
     '''
     tipoMuerte puede ser "ENEMY" o "LASER", si no se pone nada son ambas
     '''
@@ -150,18 +150,21 @@ def heatMapDeads(eventos,tipoMuerte=None):
     
     plt.title(titulo)
 
+    ruta = os.path.join(rutaSave, titulo+'.png')
     # Mostrar la figura
     if SAVE:
-        plt.savefig(titulo)
+        plt.savefig(ruta)
+        plt.clf()  # limpiar figura
     else:
         plt.show()
 
-
-def graficoCircular(titulo, datos, labels, colors):
+def graficoCircular(titulo, datos, labels, colors, rutaSave):
     plt.pie(datos, labels=labels, colors=colors, autopct="%0.1f %%")
     plt.title(titulo)
+    ruta = os.path.join(rutaSave, titulo+'.png')
     if SAVE:
-        plt.savefig(titulo)
+        plt.savefig(ruta)
+        plt.clf()  # limpiar figura
     else:
         plt.show()
 
@@ -371,23 +374,41 @@ def timelineApuntadoPistola(eventos):
 
 
 def main():
-    # # Para leer todos los json de una carpeta
-    # # Carpeta donde se encuentran los archivos JSON
-    # carpeta = './json_files'
+    build= 'A'
+    # Para leer todos los json de una carpeta
+    # Carpeta donde se encuentran los archivos JSON
+    carpetaJsons = './Datos/'+build+'/jsons'
+    carpeta = './Datos/'+build+'/'
 
-    # # Recorrer todos los archivos en la carpeta
-    # for archivo in os.listdir(carpeta):
-    #     if archivo.endswith('.json'):
-    #         # Abrir el archivo JSON y leer su contenido
-    #         with open(os.path.join(carpeta, archivo), 'r') as f:
-    #             contenido = json.load(f)
-    #         # Hacer algo con el contenido del archivo
+    datos = []
+    # Recorrer todos los archivos en la carpeta
+    for archivo in os.listdir(carpetaJsons):
+        if archivo.endswith('.json'):
+            # Obtener el nombre del archivo y la extensión
+            nombre_archivo, extension = os.path.splitext(archivo)
+            
+            # Crear una carpeta con el nombre del archivo
+            carpeta_archivo = os.path.join(carpeta, nombre_archivo)
+            os.makedirs(carpeta_archivo, exist_ok=True)
+            
+            # Obtener la ruta relativa a la carpeta del archivo
+            ruta_relativa = os.path.relpath(carpeta_archivo)
 
-    # Leer datos de archivos json
-    with open('./Datos/BAVictor.json', 'r') as f:
-        datos = json.load(f)
+            # Abrir el archivo JSON y leer su contenido
+            with open(os.path.join(carpetaJsons, archivo), 'r') as f:
+                datos = json.load(f)
+                obtenerMetricas(datos, ruta_relativa)
+                # datos.extend(datosAux)  # Añadir los datos de este archivo a la lista de datos totales
+            # Hacer algo con el contenido del archivo
+
+    # # Leer datos de archivos json
+    # with open('./Datos/BAVictor.json', 'r') as f:
+    #     datos = json.load(f)
        
     # EVENTOS DE LA TELEMETRÍA
+    # obtenerMetricas(datos)
+
+def obtenerMetricas(datos, rutaSave):
     eventos = {
     "INI_SESSION": [],
     "END_SESSION": [],
@@ -407,7 +428,6 @@ def main():
     # Guardar todos los eventos segun el tipo
     for evento in datos:
         eventos[evento["tipo"]].append(evento)
-
 
 #-----------------------------------------------------------------------------------------
 #-----------------------------------CALCULO DE METRICAS-----------------------------------
@@ -459,9 +479,10 @@ def main():
 # El número de asesinatos con cada arma y su ratio de efectividad (asesinatos/ataque).
     usos = [contUsoCuchillo, contUsoPistola]
     asesinatos= [contKillsCuchillo, contKillsPistola]
- 
 
-    with open('output.txt', 'w') as file:
+    ruta = os.path.join(rutaSave, 'metricas.txt')
+
+    with open(ruta, 'w') as file:
         #________Número de veces que el jugador cambia de arma________
         print("N CAMBIOS DE ARMAS: ",len(eventos['CHANGE_WEAPON']), file=file)
 
@@ -478,8 +499,14 @@ def main():
         print("DEAD CON LASER: ",contDeadLaser, "Porcentaje: " , porcentajesTiposDeMuertes[1], "%", file=file)
         print("DEAD CON SUICIDIO: ",contDeadLaser, "Porcentaje: " , porcentajesTiposDeMuertes[2], "%", file=file)
         print("TIEMPO AIMING: ",aimingTiempo, "s", file=file)
-        print('Efectividad cuchillo:', (contKillsCuchillo/contUsoCuchillo)*100, "%", file=file)
-        print('Efectividad pistola:', (contKillsPistola/contUsoPistola)*100, "%", file=file)
+        if(contUsoCuchillo == 0):
+            print('Efectividad cuchillo:', 0, "%", file=file)
+        else:
+            print('Efectividad cuchillo:', (contKillsCuchillo/contUsoCuchillo)*100, "%", file=file)
+        if(contUsoPistola == 0):
+            print('Efectividad pistola:', 0, "%", file=file)
+        else:
+            print('Efectividad pistola:', (contKillsPistola/contUsoPistola)*100, "%", file=file)
     
 
 #-----------------------------------------------------------------------------------------
@@ -487,9 +514,9 @@ def main():
 #-----------------------------------------------------------------------------------------    
 
 
-#-----------------------------------------------------------------------------------------
-#-------------------------------------DATOS VISUALES--------------------------------------
-#-----------------------------------------------------------------------------------------
+# #-----------------------------------------------------------------------------------------
+# #-------------------------------------DATOS VISUALES--------------------------------------
+# #-----------------------------------------------------------------------------------------
     tiposArmas = ["CUCHILLO","PISTOLA"]
     tiposMuertes = ["ENEMIGO","LASER","SUICIDIO"]
     colors = ['#ef476f', '#00b4d8', '#f2e8cf']
@@ -497,17 +524,14 @@ def main():
     # Mostrar el porcentaje del uso total de cada arma en el tiempo
     tiempoArmas = cuchilloTiempo + pistolaTiempo    # Deberia ser el tiempo total
     porcentajesTiemposArmas = [(cuchilloTiempo/tiempoArmas) * 100, (pistolaTiempo/tiempoArmas) * 100] 
-    graficoCircular('Porcentaje del uso de cada arma en el tiempo', porcentajesTiemposArmas, tiposArmas, colors)
+    graficoCircular('Porcentaje del uso de cada arma en el tiempo', porcentajesTiemposArmas, tiposArmas, colors, rutaSave)
 
     # Las veces con las que se ataca con cada arma
     vecesUsoArmas = contUsoCuchillo + contUsoPistola   
     porcentajesUsoArmas = [(contUsoCuchillo/vecesUsoArmas) * 100, (contUsoPistola/vecesUsoArmas) * 100] 
-    graficoCircular('Porcentaje de ataque con cada arma', porcentajesUsoArmas, tiposArmas, colors)
+    graficoCircular('Porcentaje de ataque con cada arma', porcentajesUsoArmas, tiposArmas, colors, rutaSave)
     
     # Un timeline que recoja el uso de cada arma en el tiempo y con la información de la munición.
-
-    
-
 
     # crear un gráfico de barras con dos series de datos
     x = range(len(tiposArmas))
@@ -527,7 +551,9 @@ def main():
 
     # mostrar el gráfico
     if SAVE:
-        plt.savefig("G Barras")
+        ruta = os.path.join(rutaSave, 'Grafico_Barras_Usos_Armas.png')
+        plt.savefig(ruta)
+        plt.clf()  # limpiar figura
     else:
         plt.show()
 
@@ -546,21 +572,12 @@ def main():
     plt.ylabel('Distancia en unidades métricas del juego')
     plt.title('Distancias de las kills y arma usada')
     plt.legend(loc='best')
+    ruta = os.path.join(rutaSave, 'Distancias_de_las_kills_y_arma_usada.png')
     if SAVE:
-        plt.savefig('Distancias de las kills y arma usada')
+        plt.savefig(ruta)
+        plt.clf()  # limpiar figura
     else:
         plt.show()
-
-
-    # Tipos de muertes
-    graficoCircular('Causas de muertes del jugador', porcentajesTiposDeMuertes, tiposMuertes, colors)
-
-    # MAPA DE CALOR TODAS LAS MUERTES
-    heatMapDeads(eventos)
-    # MAPA DE CALOR CON LAS MUERTES DE ENEMIGOS
-    heatMapDeads(eventos, "ENEMY")
-    # MAPA DE CALOR CON LAS MUERTES DE LASERES
-    heatMapDeads(eventos, "LASER")
 
     # listas para guardar los timestamps y tipos de muerte
     timestampsLaser = []
@@ -572,7 +589,7 @@ def main():
     # extraer la información de timestamp y tipo de muerte de cada muerte
     cont = 0
     for e in eventos['POS_PLAYER_DEAD']:
-        if cont > len(eventos["POS_ENEMY_KILL"]):
+        if cont >= len(eventos["POS_ENEMY_KILL"]):
             break
         if(e['dead'] == 'ENEMY' and e.get('timestamp') == eventos["POS_ENEMY_KILL"][cont].get('timestamp')):
             cont+=1
@@ -593,8 +610,7 @@ def main():
             timestampsEnemigo.remove(e)
 
     # crear la figura y el eje
-    fig, ax = plt.subplots()
-
+    fig, ax = plt.subplots(figsize=(25, 5))
     ax.axhline(y=0, alpha= 0.3)       
     arriba = False
     posY = 0
@@ -605,7 +621,7 @@ def main():
         mins = timestampsEnemigo[i] // 60
         segs = timestampsEnemigo[i] % 60
         if arriba:
-            posY = 0.005
+            posY = 0.005 
         else:
             posY = -0.005
         arriba = not arriba
@@ -616,13 +632,14 @@ def main():
 
         mins = timestampsLaser[i] // 60
         segs = timestampsLaser[i] % 60
-        plt.text(timestampsLaser[i], -0.007, f'{mins}:{segs:02d}', ha='center', fontsize=8, color="red")
+        plt.text(timestampsLaser[i], -0.01, f'{mins}:{segs:02d}', ha='center', fontsize=8, color="red")
+
     for i in range(len(timestampsSuicidio)):
         ax.scatter(timestampsSuicidio[i], 0, color="orange", s=50, alpha=0.75)
 
         mins = timestampsSuicidio[i] // 60
         segs = timestampsSuicidio[i] % 60
-        plt.text(timestampsSuicidio[i], -0.0025, f'{mins}:{segs:02d}', ha='center', fontsize=8, color="orange")
+        plt.text(timestampsSuicidio[i], -0.015, f'{mins}:{segs:02d}', ha='center', fontsize=8, color="orange")
 
     # configurar el eje x
     ax.set_xlabel('Timestamp')
@@ -638,21 +655,23 @@ def main():
     ax.legend(loc='upper left', framealpha=1)
     plt.title('Timeline muertes')
     # mostrar el gráfico
+    ruta = os.path.join(rutaSave, 'Timeline_muertes.png')
     if SAVE:
-        plt.savefig('Timeline muertes')
+        plt.savefig(ruta)
+        plt.clf()  # limpiar figura
     else:
         plt.show()
 
 
     # Tipos de muertes
-    graficoCircular('Causas de muertes del jugador', porcentajesTiposDeMuertes, tiposMuertes, colors)
+    graficoCircular('Causas de muertes del jugador', porcentajesTiposDeMuertes, tiposMuertes, colors, rutaSave)
 
     # MAPA DE CALOR TODAS LAS MUERTES
-    heatMapDeads(eventos)
+    heatMapDeads(eventos, rutaSave)
     # MAPA DE CALOR CON LAS MUERTES DE ENEMIGOS
-    heatMapDeads(eventos, "ENEMY")
+    heatMapDeads(eventos, rutaSave, "ENEMY")
     # MAPA DE CALOR CON LAS MUERTES DE LASERES
-    heatMapDeads(eventos, "LASER")
+    heatMapDeads(eventos, rutaSave, "LASER")
 
     # timelineUsoArmas(eventos)
 #-----------------------------------------------------------------------------------------
