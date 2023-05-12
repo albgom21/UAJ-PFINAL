@@ -217,8 +217,6 @@ def timelineUsoArmas(eventos):
         else:
             colors1[x] = 'black'
 
-
-
     for x in range(len(x_values)):
         if x < len(x_values) - 1:
             totalSegundos = x_values[x + 1] - aux
@@ -264,6 +262,110 @@ def timelineUsoArmas(eventos):
     fig.update_layout(xaxis=dict(tickformat="%M:%Ss"))
     fig.update_layout(font=dict(size=20))
     fig.show()
+
+def timelineApuntadoPistola(eventos):
+    #
+## TIMELINE 
+ # Creamos una lista de eventos de prueba
+    aux = eventos["CHANGE_WEAPON"] + eventos["POS_PLAYER_DEAD"] + eventos["INI_LVL"] + eventos["END_LVL"] + eventos["AIMING"] + eventos["NOT_AIMING"]
+    
+    y_values = []
+    x_values = []
+
+    aux = sorted(aux, key=lambda k: k['timestamp'])
+    for evento in aux:
+        if(evento.get('tipo') == "INI_LVL"):
+            y_values.append("cuchillo")
+            x_values.append(evento.get('timestamp'))
+            actualWeapon = "KNIFE"
+
+        elif(evento.get('tipo') == "END_LVL"):
+            x_values.append(evento.get('timestamp'))
+
+        elif(evento.get('tipo') == "AIMING"):
+            x_values.append(evento.get('timestamp'))
+            y_values.append("apuntando")
+        elif(evento.get('tipo') == "NOT_AIMING" and actualWeapon == "PISTOL"):
+            x_values.append(evento.get('timestamp'))
+            y_values.append("pistola")
+
+        # Si ha muerto contabilizar el tiempo que llevaba segun el arma
+        elif(evento.get('tipo') == "POS_PLAYER_DEAD"):
+            if(actualWeapon == "PISTOL"):
+                x_values.append(evento.get('timestamp'))
+                actualWeapon = "KNIFE"
+                y_values.append("cuchillo")
+
+        # Teniendo la pistola cambio a cuchillo
+        elif(evento.get('tipo') == "CHANGE_WEAPON" and evento.get('weapon') == 'KNIFE') and actualWeapon == "PISTOL":
+            actualWeapon = "KNIFE"
+            x_values.append(evento.get('timestamp'))
+            y_values.append("cuchillo")
+        # Teniendo el cuchillo cambio a pistola
+        elif(evento.get('tipo') == "CHANGE_WEAPON" and evento.get('weapon') == 'PISTOL') and actualWeapon == "KNIFE":
+            actualWeapon = "PISTOL"
+            x_values.append(evento.get('timestamp'))
+            y_values.append("pistola")
+
+    aux = x_values[0]
+    x_values_end = x_values.copy()
+    colors1 = y_values.copy()
+
+    #Dependiendo de y_values, se le asigna un color a colors1
+    for x in range(len(y_values)):
+        if y_values[x] == 'pistola':
+            colors1[x] = 'Pistola'
+        elif y_values[x] == 'cuchillo':
+            colors1[x] = 'Cuchillo'
+        elif y_values[x] == 'apuntando':
+            colors1[x] = 'Apuntando'
+        else:
+            colors1[x] = 'black'
+
+    for x in range(len(x_values)):
+        if x < len(x_values) - 1:
+            totalSegundos = x_values[x + 1] - aux
+            minutos = totalSegundos // 60
+            segundos = totalSegundos % 60
+
+            x_values_end[x] = pd.to_datetime(f'{minutos}:{segundos}', format='%M:%S')
+        else:
+            totalSegundos = x_values[x] - aux
+            minutos = totalSegundos // 60
+            segundos = totalSegundos % 60
+
+            x_values_end[x] = pd.to_datetime(f'{minutos}:{segundos}', format='%M:%S')
+        if(x_values[x] != aux):
+            totalSegundos = x_values[x] - aux
+            minutos = totalSegundos // 60
+            segundos = totalSegundos % 60
+
+            x_values[x] = pd.to_datetime(f'{minutos}:{segundos}', format='%M:%S')
+        else:
+            totalSegundos = x_values[x] - aux
+            minutos = totalSegundos // 60
+            segundos = totalSegundos % 60
+
+            x_values[x] = pd.to_datetime(f'{minutos}:{segundos}', format='%M:%S')
+
+    auxData = pd.DataFrame()
+
+    #dar a auxdata los valores de x_values y y_values
+    auxData['x_values'] = x_values
+    auxData['time_end'] = x_values_end
+    auxData['Armas'] = y_values
+    auxData['Leyenda'] = colors1
+
+    fig = px.timeline(auxData,
+                    x_start='x_values',
+                    x_end='time_end',
+                    y="Armas",
+                    color="Leyenda")
+
+    fig.update_layout(xaxis=dict(tickformat="%M:%Ss"))
+    fig.update_layout(font=dict(size=20))
+    fig.show()
+
 
 def main():
     # # Para leer todos los json de una carpeta
@@ -347,15 +449,15 @@ def main():
 #________Número de veces que el jugador muere por el disparo de un enemigo________
     contDeadEnemigo = sum(1 for evento in eventos['POS_PLAYER_DEAD']  if evento.get('dead') == 'ENEMY')
 
-    contSuicidios = contDeadEnemigo - contKillsDeEnemigos #Al suicidarte con un rebote de bala se marca como que te ha matado un enemigo
+    suicidios = contDeadEnemigo - contKillsDeEnemigos #Al suicidarte con un rebote de bala se marca como que te ha matado un enemigo
     deadsTotales = contDeadEnemigo+contDeadLaser
-    contDeadEnemigo -= contSuicidios
-    porcentajesTiposDeMuertes = [(contDeadEnemigo/deadsTotales)*100,(contDeadLaser/deadsTotales)*100,(contSuicidios/deadsTotales)*100]
+    contDeadEnemigo -= suicidios
+    porcentajesTiposDeMuertes = [(contDeadEnemigo/deadsTotales)*100,(contDeadLaser/deadsTotales)*100,(suicidios/deadsTotales)*100]
 
     print("DEADS TOTALES: ", deadsTotales)
     print("DEAD CON ENEMIGO: ",contDeadEnemigo, "Porcentaje: " , porcentajesTiposDeMuertes[0], "%")
     print("DEAD CON LASER: ",contDeadLaser, "Porcentaje: " , porcentajesTiposDeMuertes[1], "%")
-    print("DEAD CON SUICIDIO: ",contSuicidios, "Porcentaje: " , porcentajesTiposDeMuertes[2], "%")
+    print("DEAD CON SUICIDIO: ",contDeadLaser, "Porcentaje: " , porcentajesTiposDeMuertes[2], "%")
 
 #________Posición en la que el jugador muere por un enemigo________
     posDeadEnemigo = [(evento['posX'], evento['posY']) for evento in filter(lambda e: e.get('dead') == 'ENEMY', eventos['POS_PLAYER_DEAD'])]
@@ -367,7 +469,7 @@ def main():
     print("TIEMPO AIMING: ",aimingTiempo, "s")
 
 #________Distancia enemigo-jugador al matar a un enemigo________
-    distancias = distanciaKillEne(eventos)
+    distanciaKillEne(eventos)
 
 
 #-----------------------------------------------------------------------------------------
@@ -378,133 +480,65 @@ def main():
 #-----------------------------------------------------------------------------------------
 #-------------------------------------DATOS VISUALES--------------------------------------
 #-----------------------------------------------------------------------------------------
-    # tiposArmas = ["CUCHILLO","PISTOLA"]
-    # tiposMuertes = ["ENEMIGO","LASER","SUICIDIO"]
-    # colors = ['#ef476f', '#00b4d8', '#f2e8cf']
 
-    # # Mostrar el porcentaje del uso total de cada arma en el tiempo
-    # tiempoArmas = cuchilloTiempo + pistolaTiempo    # Deberia ser el tiempo total
-    # porcentajesTiemposArmas = [(cuchilloTiempo/tiempoArmas) * 100, (pistolaTiempo/tiempoArmas) * 100] 
-    # graficoCircular('Porcentaje del uso de cada arma en el tiempo', porcentajesTiemposArmas, tiposArmas, colors)
+    timelineApuntadoPistola(eventos)
 
-    # # Las veces con las que se ataca con cada arma
-    # vecesUsoArmas = contUsoCuchillo + contUsoPistola   
-    # porcentajesUsoArmas = [(contUsoCuchillo/vecesUsoArmas) * 100, (contUsoPistola/vecesUsoArmas) * 100] 
-    # graficoCircular('Porcentaje de ataque con cada arma', porcentajesUsoArmas, tiposArmas, colors)
+    tiposArmas = ["CUCHILLO","PISTOLA"]
+    tiposMuertes = ["ENEMIGO","LASER","SUICIDIO"]
+    colors = ['#ef476f', '#00b4d8', '#f2e8cf']
 
-    # # Las veces con las que se ataca con cada arma ???????????????
-    # porcentajesUsoArmas = [(contUsoCuchillo/killsTotales) * 100, (contUsoPistola/killsTotales) * 100] 
-    # graficoCircular('Porcentaje de kills con cada arma en comparación a su uso', porcentajesUsoArmas, tiposArmas, colors)
+    # Mostrar el porcentaje del uso total de cada arma en el tiempo
+    tiempoArmas = cuchilloTiempo + pistolaTiempo    # Deberia ser el tiempo total
+    porcentajesTiemposArmas = [(cuchilloTiempo/tiempoArmas) * 100, (pistolaTiempo/tiempoArmas) * 100] 
+    graficoCircular('Porcentaje del uso de cada arma en el tiempo', porcentajesTiemposArmas, tiposArmas, colors)
 
-    # # Un timeline que recoja el uso de cada arma en el tiempo y con la información de la munición.
+    # Las veces con las que se ataca con cada arma
+    vecesUsoArmas = contUsoCuchillo + contUsoPistola   
+    porcentajesUsoArmas = [(contUsoCuchillo/vecesUsoArmas) * 100, (contUsoPistola/vecesUsoArmas) * 100] 
+    graficoCircular('Porcentaje de ataque con cada arma', porcentajesUsoArmas, tiposArmas, colors)
 
-    # # El número de asesinatos con cada arma y su ratio de efectividad (asesinatos/ataque).
-    # usos = [contUsoCuchillo, contUsoPistola]
-    # asesinatos= [contKillsCuchillo, contKillsPistola]
-    # print('Efectividad cuchillo:', (contKillsCuchillo/contUsoCuchillo)*100, "%")
-    # print('Efectividad pistola:', (contKillsPistola/contUsoPistola)*100, "%")
+    # Las veces con las que se ataca con cada arma ???????????????
+    porcentajesUsoArmas = [(contUsoCuchillo/killsTotales) * 100, (contUsoPistola/killsTotales) * 100] 
+    graficoCircular('Porcentaje de kills con cada arma en comparación a su uso', porcentajesUsoArmas, tiposArmas, colors)
+
+    # Un timeline que recoja el uso de cada arma en el tiempo y con la información de la munición.
+
+    # El número de asesinatos con cada arma y su ratio de efectividad (asesinatos/ataque).
+    usos = [contUsoCuchillo, contUsoPistola]
+    asesinatos= [contKillsCuchillo, contKillsPistola]
+    print('Efectividad cuchillo:', (contKillsCuchillo/contUsoCuchillo)*100, "%")
+    print('Efectividad pistola:', (contKillsPistola/contUsoPistola)*100, "%")
 
 
-    # # crear un gráfico de barras con dos series de datos
-    # x = range(len(tiposArmas))
-    # plt.bar([i - 0.2 for i in x], usos, width=0.3, align='center', label='Usos', color='#a8dadc')
-    # plt.bar([i + 0.2 for i in x], asesinatos, width=0.3, align='center', label='Asesinatos', color='#e63946')
+    # crear un gráfico de barras con dos series de datos
+    x = range(len(tiposArmas))
+    plt.bar([i - 0.2 for i in x], usos, width=0.3, align='center', label='Usos', color='#a8dadc')
+    plt.bar([i + 0.2 for i in x], asesinatos, width=0.3, align='center', label='Asesinatos', color='#e63946')
 
-    # # añadir etiquetas de los ejes y la leyenda
-    # plt.xlabel('Armas')
-    # plt.ylabel('Valores')
-    # plt.xticks(x, tiposArmas)
-    # plt.legend()
+    # añadir etiquetas de los ejes y la leyenda
+    plt.xlabel('Armas')
+    plt.ylabel('Valores')
+    plt.xticks(x, tiposArmas)
+    plt.legend()
 
-    # for i, v in enumerate(usos):
-    #     plt.text(i - 0.2, v + 0.5, str(v), color='#4a6263', fontweight='bold', ha='center', va='bottom')
-    # for i, v in enumerate(asesinatos):
-    #     plt.text(i + 0.2, v + 0.5, str(v), color='#541519', fontweight='bold', ha='center', va='bottom')
-
-    # # mostrar el gráfico
-    # plt.show()
-
-    # # Gráfico distancias y arma
-    # dPistola = []
-    # dCuchillo= []
-    # for d in distancias:
-    #     if d['Arma'] == 'PISTOL':
-    #         dPistola.append(d['Dist'])
-    #     elif d['Arma'] == 'KNIFE':
-    #         dCuchillo.append(d['Dist'])
-
-    # plt.bar(dPistola, dPistola, color = 'red', width=0.015, alpha=0.8, label= 'Pistola')
-    # plt.bar(dCuchillo, dCuchillo, color = 'blue', width=0.015, alpha=0.5, label= 'Cuchillo')
-    # plt.xlabel('Distancia')
-    # plt.ylabel('Distancia')
-    # plt.title('Distancias de las kills y arma usada')
-    # plt.legend(loc='best')
-    # plt.show()
-
-    # # Tipos de muertes
-    # graficoCircular('Causas de muertes del jugador', porcentajesTiposDeMuertes, tiposMuertes, colors)
-
-    # # MAPA DE CALOR TODAS LAS MUERTES
-    # heatMapDeads(eventos)
-    # # MAPA DE CALOR CON LAS MUERTES DE ENEMIGOS
-    # heatMapDeads(eventos, "ENEMY")
-    # # MAPA DE CALOR CON LAS MUERTES DE LASERES
-    # heatMapDeads(eventos, "LASER")
-
-    # listas para guardar los timestamps y tipos de muerte
-    timestampsLaser = []
-    timestampsEnemigo = []
-    timestampsSuicidio = []
-    eventosSuicidio = []
-    tiempoInicio = eventos["INI_LVL"][0].get("timestamp")
-
-    # extraer la información de timestamp y tipo de muerte de cada muerte
-    cont = 0
-    for e in eventos['POS_PLAYER_DEAD']:
-        if cont > len(eventos["POS_ENEMY_KILL"]):
-            break
-        if(e['dead'] == 'ENEMY' and e.get('timestamp') == eventos["POS_ENEMY_KILL"][cont].get('timestamp')):
-            cont+=1
-        elif e['dead'] == 'ENEMY':
-            eventosSuicidio.append(e)
-            timestampsSuicidio.append(e["timestamp"]-tiempoInicio)
-            
-    for e in eventos["POS_PLAYER_DEAD"]:
-        if e['dead'] == 'ENEMY':
-            timestampsEnemigo.append(e["timestamp"]-tiempoInicio)
-
-        elif e['dead'] == 'LASER':
-            timestampsLaser.append(e["timestamp"]-tiempoInicio)
-      
-
-    # crear la figura y el eje
-    fig, ax = plt.subplots()
-
-    # graficar los puntos en el timeline
-    for i in range(len(timestampsEnemigo)):
-        ax.scatter(timestampsEnemigo[i], 0, color="green", s=50, alpha=0.5)
-    for i in range(len(timestampsLaser)):
-        ax.scatter(timestampsLaser[i], 0, color="red", s=50, alpha=0.5)
-    for i in range(len(timestampsSuicidio)):
-        ax.scatter(timestampsSuicidio[i], 0, color="orange", s=50, alpha=0.75)
-
-    # configurar el eje x
-    ax.set_xlabel('Timestamp')
-
-    # ocultar el eje y
-    ax.get_yaxis().set_visible(False)
-
-    color_map = {"LASER": "red", "SUICIDIO": "orange", "ENEMIGO": "green"}
-    # mostrar la leyenda de colores
-    for tipo_muerte, color in color_map.items():
-        ax.scatter([], [], color=color, label=tipo_muerte)
-
-    ax.legend(loc='upper left', framealpha=1)
+    for i, v in enumerate(usos):
+        plt.text(i - 0.2, v + 0.5, str(v), color='#4a6263', fontweight='bold', ha='center', va='bottom')
+    for i, v in enumerate(asesinatos):
+        plt.text(i + 0.2, v + 0.5, str(v), color='#541519', fontweight='bold', ha='center', va='bottom')
 
     # mostrar el gráfico
     plt.show()
 
-    timelineUsoArmas(eventos)
+    # Tipos de muertes
+    graficoCircular('Causas de muertes del jugador', porcentajesTiposDeMuertes, tiposMuertes, colors)
+
+    # MAPA DE CALOR TODAS LAS MUERTES
+    heatMapDeads(eventos)
+    # MAPA DE CALOR CON LAS MUERTES DE ENEMIGOS
+    heatMapDeads(eventos, "ENEMY")
+    # MAPA DE CALOR CON LAS MUERTES DE LASERES
+    heatMapDeads(eventos, "LASER")
+
 #-----------------------------------------------------------------------------------------
 #-----------------------------------FIN DATOS VISUALES------------------------------------
 #-----------------------------------------------------------------------------------------
