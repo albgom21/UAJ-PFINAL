@@ -7,7 +7,7 @@ import plotly.express as px
 import matplotlib.ticker as ticker
 import numpy as np
 
-SAVE = True
+SAVE = False
 
 #____________METODOS PARA EXTRAER METRICAS____________
 
@@ -93,9 +93,7 @@ def tiempoUsoArmas(eventos):
         pistolaTiempo += lastTime - auxTiempo
     elif(actualWeapon == "KNIFE"):
         cuchilloTiempo += lastTime - auxTiempo
-    
-    print("Tiempo cuchillo: ", cuchilloTiempo, "s")
-    print("Tiempo pistola: ", pistolaTiempo, "s" )
+      
     return cuchilloTiempo,pistolaTiempo
 
 
@@ -388,7 +386,7 @@ def main():
     # Leer datos de archivos json
     with open('./Datos/BAVictor.json', 'r') as f:
         datos = json.load(f)
-
+       
     # EVENTOS DE LA TELEMETRÍA
     eventos = {
     "INI_SESSION": [],
@@ -414,28 +412,18 @@ def main():
 #-----------------------------------------------------------------------------------------
 #-----------------------------------CALCULO DE METRICAS-----------------------------------
 #-----------------------------------------------------------------------------------------
-
+    
 #________Tiempo medio del uso de la pistola y del cuchillo________
     cuchilloTiempo, pistolaTiempo = tiempoUsoArmas(eventos)
-
-#________Número de veces que el jugador cambia de arma________
-    print("CAMBIOS DE ARMAS: ",len(eventos['CHANGE_WEAPON']))
 
 #________Número de usos de cada arma________
     contUsoCuchillo = sum(1 for evento in eventos['POS_PLAYER_ATTACK'] if evento.get('weapon') == 'KNIFE')
     contUsoPistola = sum(1 for evento in eventos['POS_PLAYER_ATTACK']  if evento.get('weapon') == 'PISTOL')
 
-    print("USO DE CUCHILLO: ",contUsoCuchillo)
-    print("USO DE PISTOLA: ",contUsoPistola)
-
 #________Número de veces que el jugador mata con cada una de las armas________
     contKillsCuchillo = sum(1 for evento in eventos['POS_PLAYER_KILL']  if evento.get('weapon') == 'KNIFE')
     contKillsPistola = sum(1 for evento in eventos['POS_PLAYER_KILL']  if evento.get('weapon') == 'PISTOL')
     killsTotales = contKillsPistola+contKillsCuchillo
-
-    print("KILLS TOTALES: ", killsTotales)
-    print("KILLS CON CUCHILLO: ",contKillsCuchillo, "Porcentaje: " , (contKillsCuchillo/killsTotales)*100, "%")
-    print("KILLS CON PISTOLA: ",contKillsPistola, "Porcentaje: " , (contKillsPistola/killsTotales)*100, "%")
 
 #________Número de veces que el jugador muere por colisionar con un láser________
     contDeadLaser = sum(1 for evento in eventos['POS_PLAYER_DEAD']  if evento.get('dead') == 'LASER')
@@ -447,8 +435,6 @@ def main():
 #________Posición del enemigo al eliminar al jugador________
     posEnemigoKill = [(evento['posX'], evento['posY']) for evento in eventos['POS_ENEMY_KILL']]
     contKillsDeEnemigos = len(posEnemigoKill)
-
-    print("KILLS DE ENEMIGOS: ", contKillsDeEnemigos)
     # print("POS KILL ENEMIGO: ", posEnemigoKill)
 
 #________Número de veces que el jugador muere por el disparo de un enemigo________
@@ -459,11 +445,6 @@ def main():
     contDeadEnemigo -= suicidios
     porcentajesTiposDeMuertes = [(contDeadEnemigo/deadsTotales)*100,(contDeadLaser/deadsTotales)*100,(suicidios/deadsTotales)*100]
 
-    print("DEADS TOTALES: ", deadsTotales)
-    print("DEAD CON ENEMIGO: ",contDeadEnemigo, "Porcentaje: " , porcentajesTiposDeMuertes[0], "%")
-    print("DEAD CON LASER: ",contDeadLaser, "Porcentaje: " , porcentajesTiposDeMuertes[1], "%")
-    print("DEAD CON SUICIDIO: ",contDeadLaser, "Porcentaje: " , porcentajesTiposDeMuertes[2], "%")
-
 #________Posición en la que el jugador muere por un enemigo________
     posDeadEnemigo = [(evento['posX'], evento['posY']) for evento in filter(lambda e: e.get('dead') == 'ENEMY', eventos['POS_PLAYER_DEAD'])]
     # print("POS DEAD CON ENEMIGO: ",posDeadEnemigo)
@@ -471,11 +452,35 @@ def main():
 #________Tiempo medio que el jugador está apuntando con la pistola________
     aimingTiempo = tiempoApuntado(eventos)
     
-    print("TIEMPO AIMING: ",aimingTiempo, "s")
 
 #________Distancia enemigo-jugador al matar a un enemigo________
     distancias = distanciaKillEne(eventos)
 
+# El número de asesinatos con cada arma y su ratio de efectividad (asesinatos/ataque).
+    usos = [contUsoCuchillo, contUsoPistola]
+    asesinatos= [contKillsCuchillo, contKillsPistola]
+ 
+
+    with open('output.txt', 'w') as file:
+        #________Número de veces que el jugador cambia de arma________
+        print("N CAMBIOS DE ARMAS: ",len(eventos['CHANGE_WEAPON']), file=file)
+
+        print("Tiempo cuchillo: ", cuchilloTiempo, "s", file=file)
+        print("Tiempo pistola: ", pistolaTiempo, "s" , file=file)
+        print("USO DE CUCHILLO: ",contUsoCuchillo, file=file)
+        print("USO DE PISTOLA: ",contUsoPistola, file=file)
+        print("KILLS TOTALES: ", killsTotales, file=file)
+        print("KILLS CON CUCHILLO: ",contKillsCuchillo, "Porcentaje: " , (contKillsCuchillo/killsTotales)*100, "%", file=file)
+        print("KILLS CON PISTOLA: ",contKillsPistola, "Porcentaje: " , (contKillsPistola/killsTotales)*100, "%", file=file)
+        print("KILLS DE ENEMIGOS: ", contKillsDeEnemigos, file=file)
+        print("DEADS TOTALES: ", deadsTotales, file=file)
+        print("DEAD CON ENEMIGO: ",contDeadEnemigo, "Porcentaje: " , porcentajesTiposDeMuertes[0], "%", file=file)
+        print("DEAD CON LASER: ",contDeadLaser, "Porcentaje: " , porcentajesTiposDeMuertes[1], "%", file=file)
+        print("DEAD CON SUICIDIO: ",contDeadLaser, "Porcentaje: " , porcentajesTiposDeMuertes[2], "%", file=file)
+        print("TIEMPO AIMING: ",aimingTiempo, "s", file=file)
+        print('Efectividad cuchillo:', (contKillsCuchillo/contUsoCuchillo)*100, "%", file=file)
+        print('Efectividad pistola:', (contKillsPistola/contUsoPistola)*100, "%", file=file)
+    
 
 #-----------------------------------------------------------------------------------------
 #-----------------------------------FIN CALCULO DE METRICAS-------------------------------
@@ -501,11 +506,7 @@ def main():
     
     # Un timeline que recoja el uso de cada arma en el tiempo y con la información de la munición.
 
-    # El número de asesinatos con cada arma y su ratio de efectividad (asesinatos/ataque).
-    usos = [contUsoCuchillo, contUsoPistola]
-    asesinatos= [contKillsCuchillo, contKillsPistola]
-    print('Efectividad cuchillo:', (contKillsCuchillo/contUsoCuchillo)*100, "%")
-    print('Efectividad pistola:', (contKillsPistola/contUsoPistola)*100, "%")
+    
 
 
     # crear un gráfico de barras con dos series de datos
