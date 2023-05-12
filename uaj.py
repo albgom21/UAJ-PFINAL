@@ -7,6 +7,8 @@ import plotly.express as px
 import matplotlib.ticker as ticker
 import numpy as np
 
+SAVE = True
+
 #____________METODOS PARA EXTRAER METRICAS____________
 
 def distanciaKillEne(eventos):
@@ -151,16 +153,21 @@ def heatMapDeads(eventos,tipoMuerte=None):
     plt.title(titulo)
 
     # Mostrar la figura
-    plt.show()
+    if SAVE:
+        plt.savefig(titulo)
+    else:
+        plt.show()
+
 
 def graficoCircular(titulo, datos, labels, colors):
     plt.pie(datos, labels=labels, colors=colors, autopct="%0.1f %%")
     plt.title(titulo)
-    plt.show()
+    if SAVE:
+        plt.savefig(titulo)
+    else:
+        plt.show()
 
 def timelineUsoArmas(eventos):
-    #
-## TIMELINE 
  # Creamos una lista de eventos de prueba
     aux = eventos["CHANGE_WEAPON"] + eventos["POS_PLAYER_DEAD"] + eventos["INI_LVL"] + eventos["END_LVL"]
     
@@ -264,8 +271,6 @@ def timelineUsoArmas(eventos):
     fig.show()
 
 def timelineApuntadoPistola(eventos):
-    #
-## TIMELINE 
  # Creamos una lista de eventos de prueba
     aux = eventos["CHANGE_WEAPON"] + eventos["POS_PLAYER_DEAD"] + eventos["INI_LVL"] + eventos["END_LVL"] + eventos["AIMING"] + eventos["NOT_AIMING"]
     
@@ -469,7 +474,7 @@ def main():
     print("TIEMPO AIMING: ",aimingTiempo, "s")
 
 #________Distancia enemigo-jugador al matar a un enemigo________
-    distanciaKillEne(eventos)
+    distancias = distanciaKillEne(eventos)
 
 
 #-----------------------------------------------------------------------------------------
@@ -480,9 +485,6 @@ def main():
 #-----------------------------------------------------------------------------------------
 #-------------------------------------DATOS VISUALES--------------------------------------
 #-----------------------------------------------------------------------------------------
-
-    timelineApuntadoPistola(eventos)
-
     tiposArmas = ["CUCHILLO","PISTOLA"]
     tiposMuertes = ["ENEMIGO","LASER","SUICIDIO"]
     colors = ['#ef476f', '#00b4d8', '#f2e8cf']
@@ -496,11 +498,7 @@ def main():
     vecesUsoArmas = contUsoCuchillo + contUsoPistola   
     porcentajesUsoArmas = [(contUsoCuchillo/vecesUsoArmas) * 100, (contUsoPistola/vecesUsoArmas) * 100] 
     graficoCircular('Porcentaje de ataque con cada arma', porcentajesUsoArmas, tiposArmas, colors)
-
-    # Las veces con las que se ataca con cada arma ???????????????
-    porcentajesUsoArmas = [(contUsoCuchillo/killsTotales) * 100, (contUsoPistola/killsTotales) * 100] 
-    graficoCircular('Porcentaje de kills con cada arma en comparación a su uso', porcentajesUsoArmas, tiposArmas, colors)
-
+    
     # Un timeline que recoja el uso de cada arma en el tiempo y con la información de la munición.
 
     # El número de asesinatos con cada arma y su ratio de efectividad (asesinatos/ataque).
@@ -527,7 +525,31 @@ def main():
         plt.text(i + 0.2, v + 0.5, str(v), color='#541519', fontweight='bold', ha='center', va='bottom')
 
     # mostrar el gráfico
-    plt.show()
+    if SAVE:
+        plt.savefig("G Barras")
+    else:
+        plt.show()
+
+    # Gráfico distancias y arma
+    dPistola = []
+    dCuchillo= []
+    for d in distancias:
+        if d['Arma'] == 'PISTOL':
+            dPistola.append(d['Dist'])
+        elif d['Arma'] == 'KNIFE':
+            dCuchillo.append(d['Dist'])
+
+    plt.bar(dPistola, dPistola, color = 'red', width=0.015, alpha=0.8, label= 'Pistola')
+    plt.bar(dCuchillo, dCuchillo, color = 'blue', width=0.015, alpha=0.5, label= 'Cuchillo')
+    plt.xlabel('Distancia en unidades métricas del juego')
+    plt.ylabel('Distancia en unidades métricas del juego')
+    plt.title('Distancias de las kills y arma usada')
+    plt.legend(loc='best')
+    if SAVE:
+        plt.savefig('Distancias de las kills y arma usada')
+    else:
+        plt.show()
+
 
     # Tipos de muertes
     graficoCircular('Causas de muertes del jugador', porcentajesTiposDeMuertes, tiposMuertes, colors)
@@ -539,6 +561,99 @@ def main():
     # MAPA DE CALOR CON LAS MUERTES DE LASERES
     heatMapDeads(eventos, "LASER")
 
+    # listas para guardar los timestamps y tipos de muerte
+    timestampsLaser = []
+    timestampsEnemigo = []
+    timestampsSuicidio = []
+    eventosSuicidio = []
+    tiempoInicio = eventos["INI_LVL"][0].get("timestamp")
+
+    # extraer la información de timestamp y tipo de muerte de cada muerte
+    cont = 0
+    for e in eventos['POS_PLAYER_DEAD']:
+        if cont > len(eventos["POS_ENEMY_KILL"]):
+            break
+        if(e['dead'] == 'ENEMY' and e.get('timestamp') == eventos["POS_ENEMY_KILL"][cont].get('timestamp')):
+            cont+=1
+        elif e['dead'] == 'ENEMY':
+            eventosSuicidio.append(e)
+            timestampsSuicidio.append(e["timestamp"]-tiempoInicio)
+            
+    for e in eventos["POS_PLAYER_DEAD"]:
+        if e['dead'] == 'ENEMY':            
+            timestampsEnemigo.append(e["timestamp"]-tiempoInicio)
+
+        elif e['dead'] == 'LASER':
+            timestampsLaser.append(e["timestamp"]-tiempoInicio)
+    
+    # Eliminar de las muertes de los enemigos los suicidios
+    for e in timestampsSuicidio:
+        if e in timestampsEnemigo:
+            timestampsEnemigo.remove(e)
+
+    # crear la figura y el eje
+    fig, ax = plt.subplots()
+
+    ax.axhline(y=0, alpha= 0.3)       
+    arriba = False
+    posY = 0
+    # graficar los puntos en el timeline y texto del tiempo exacto
+    for i in range(len(timestampsEnemigo)):
+        ax.scatter(timestampsEnemigo[i], 0, color="green", s=50, alpha=0.5)
+
+        mins = timestampsEnemigo[i] // 60
+        segs = timestampsEnemigo[i] % 60
+        if arriba:
+            posY = 0.005
+        else:
+            posY = -0.005
+        arriba = not arriba
+        plt.text(timestampsEnemigo[i], posY, f'{mins}:{segs:02d}', ha='center', fontsize=8, color="green")
+
+    for i in range(len(timestampsLaser)):
+        ax.scatter(timestampsLaser[i], 0, color="red", s=50, alpha=0.5)
+
+        mins = timestampsLaser[i] // 60
+        segs = timestampsLaser[i] % 60
+        plt.text(timestampsLaser[i], -0.007, f'{mins}:{segs:02d}', ha='center', fontsize=8, color="red")
+    for i in range(len(timestampsSuicidio)):
+        ax.scatter(timestampsSuicidio[i], 0, color="orange", s=50, alpha=0.75)
+
+        mins = timestampsSuicidio[i] // 60
+        segs = timestampsSuicidio[i] % 60
+        plt.text(timestampsSuicidio[i], -0.0025, f'{mins}:{segs:02d}', ha='center', fontsize=8, color="orange")
+
+    # configurar el eje x
+    ax.set_xlabel('Timestamp')
+
+    # ocultar el eje y
+    ax.get_yaxis().set_visible(False)
+
+    color_map = {"LASER": "red", "SUICIDIO": "orange", "ENEMIGO": "green"}
+    # mostrar la leyenda de colores
+    for tipo_muerte, color in color_map.items():
+        ax.scatter([], [], color=color, label=tipo_muerte)
+    
+    ax.legend(loc='upper left', framealpha=1)
+    plt.title('Timeline muertes')
+    # mostrar el gráfico
+    if SAVE:
+        plt.savefig('Timeline muertes')
+    else:
+        plt.show()
+
+
+    # Tipos de muertes
+    graficoCircular('Causas de muertes del jugador', porcentajesTiposDeMuertes, tiposMuertes, colors)
+
+    # MAPA DE CALOR TODAS LAS MUERTES
+    heatMapDeads(eventos)
+    # MAPA DE CALOR CON LAS MUERTES DE ENEMIGOS
+    heatMapDeads(eventos, "ENEMY")
+    # MAPA DE CALOR CON LAS MUERTES DE LASERES
+    heatMapDeads(eventos, "LASER")
+
+    # timelineUsoArmas(eventos)
 #-----------------------------------------------------------------------------------------
 #-----------------------------------FIN DATOS VISUALES------------------------------------
 #-----------------------------------------------------------------------------------------
