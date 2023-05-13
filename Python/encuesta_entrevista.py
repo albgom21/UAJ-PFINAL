@@ -17,9 +17,8 @@ frustracion_laser_build_A = []
 frustracion_laser_build_B = []
 dificultad_build_A = []
 dificultad_build_B = []
-
-
-
+uso_apuntado_build_A = []
+uso_apuntado_build_B = []
 
 def initData():
     with open('Datos/encuesta_entrevista.csv', newline='') as archivo_csv:
@@ -43,6 +42,8 @@ def initData():
         municion_build_A.append(int(i[10]))
         frustracion_laser_build_A.append(int(i[13]))
         dificultad_build_A.append(int(i[15]))
+        uso_apuntado_build_A.append(int(i[16]))
+
 
     for i in array_build_B:
         abundanciaMunicion.append(int(i[0]))
@@ -53,6 +54,7 @@ def initData():
         municion_build_B.append(int(i[10]))
         frustracion_laser_build_B.append(int(i[13]))
         dificultad_build_B.append(int(i[15]))
+        uso_apuntado_build_B.append(int(i[16]))
 
 
 def grafica_municion():
