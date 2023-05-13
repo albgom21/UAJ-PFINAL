@@ -96,7 +96,6 @@ def tiempoUsoArmas(eventos):
       
     return cuchilloTiempo,pistolaTiempo
 
-
 #____________METODOS PARA VISUALIZAR DATOS____________
 
 def heatMapDeads(eventos,rutaSave,tipoMuerte=None):
@@ -372,7 +371,6 @@ def timelineApuntadoPistola(eventos):
     fig.update_layout(font=dict(size=20))
     fig.show()
 
-
 def main():
     build= 'A'
     # Para leer todos los json de una carpeta
@@ -381,6 +379,10 @@ def main():
     carpeta = './Datos/'+build+'/'
 
     datos = []
+    allDatos = []
+
+    cuchilloTiempoTotal = 0
+    pistolaTiempoTotal = 0
     # Recorrer todos los archivos en la carpeta
     for archivo in os.listdir(carpetaJsons):
         if archivo.endswith('.json'):
@@ -397,12 +399,20 @@ def main():
             # Abrir el archivo JSON y leer su contenido
             with open(os.path.join(carpetaJsons, archivo), 'r') as f:
                 datos = json.load(f)
-                obtenerMetricas(datos, ruta_relativa)
-                # datos.extend(datosAux)  # Añadir los datos de este archivo a la lista de datos totales
-            # Hacer algo con el contenido del archivo
+                ctt, ptt = obtenerMetricas(datos, ruta_relativa)
+                cuchilloTiempoTotal += ctt
+                pistolaTiempoTotal += ptt
+                allDatos.append(datos)  # Añadir los datos de este archivo a la lista de datos totales
+            
+    # PARA TODOS LOS DATOS DE LAS BUILDS
+    # Obtener la ruta relativa a la carpeta del archivo
+    carpeta_archivo = os.path.join(carpeta, 'All')
+    os.makedirs(carpeta_archivo, exist_ok=True)
+    ruta_relativa = os.path.relpath(carpeta_archivo)
+    obtenerMetricasBuild(allDatos, ruta_relativa, cuchilloTiempoTotal, pistolaTiempoTotal)
 
 
-def obtenerMetricas(datos, rutaSave):
+def obtenerMetricasBuild(datos, rutaSave, cuchilloTiempoTotal, pistolaTiempoTotal):
     eventos = {
     "INI_SESSION": [],
     "END_SESSION": [],
@@ -419,6 +429,164 @@ def obtenerMetricas(datos, rutaSave):
     "NOT_AIMING": []
     }
 
+    # Guardar todos los eventos segun el tipo
+    for datoSingular in datos:
+        for evento in datoSingular:
+            tipo = evento['tipo']
+            if tipo in eventos:
+                eventos[tipo].append(evento)
+            else:
+                print(f"Tipo de evento desconocido: {tipo}")
+
+#-----------------------------------------------------------------------------------------
+#-----------------------------------CALCULO DE METRICAS-----------------------------------
+#-----------------------------------------------------------------------------------------
+    
+#________Tiempo medio del uso de la pistola y del cuchillo________
+    cuchilloTiempo = cuchilloTiempoTotal
+    pistolaTiempo = pistolaTiempoTotal
+
+#________Número de usos de cada arma________
+    contUsoCuchillo = sum(1 for evento in eventos['POS_PLAYER_ATTACK'] if evento.get('weapon') == 'KNIFE')
+    contUsoPistola = sum(1 for evento in eventos['POS_PLAYER_ATTACK']  if evento.get('weapon') == 'PISTOL')
+
+#________Número de veces que el jugador mata con cada una de las armas________
+    contKillsCuchillo = sum(1 for evento in eventos['POS_PLAYER_KILL']  if evento.get('weapon') == 'KNIFE')
+    contKillsPistola = sum(1 for evento in eventos['POS_PLAYER_KILL']  if evento.get('weapon') == 'PISTOL')
+    killsTotales = contKillsPistola+contKillsCuchillo
+
+#________Número de veces que el jugador muere por colisionar con un láser________
+    contDeadLaser = sum(1 for evento in eventos['POS_PLAYER_DEAD']  if evento.get('dead') == 'LASER')
+
+#________Posición en la que muere el jugador cuando colisiona con láseres________
+    posDeadLaser = [(evento['posX'], evento['posY']) for evento in filter(lambda e: e.get('dead') == 'LASER', eventos['POS_PLAYER_DEAD'])]
+    
+#________Posición del enemigo al eliminar al jugador________
+    posEnemigoKill = [(evento['posX'], evento['posY']) for evento in eventos['POS_ENEMY_KILL']]
+    contKillsDeEnemigos = len(posEnemigoKill)
+
+#________Número de veces que el jugador muere por el disparo de un enemigo________
+    contDeadEnemigo = sum(1 for evento in eventos['POS_PLAYER_DEAD']  if evento.get('dead') == 'ENEMY')
+
+    suicidios = contDeadEnemigo - contKillsDeEnemigos #Al suicidarte con un rebote de bala se marca como que te ha matado un enemigo
+    deadsTotales = contDeadEnemigo+contDeadLaser
+    contDeadEnemigo -= suicidios
+    porcentajesTiposDeMuertes = [(contDeadEnemigo/deadsTotales)*100,(contDeadLaser/deadsTotales)*100,(suicidios/deadsTotales)*100]
+
+#________Posición en la que el jugador muere por un enemigo________
+    posDeadEnemigo = [(evento['posX'], evento['posY']) for evento in filter(lambda e: e.get('dead') == 'ENEMY', eventos['POS_PLAYER_DEAD'])]
+
+#________Tiempo medio que el jugador está apuntando con la pistola________
+    aimingTiempo = tiempoApuntado(eventos)
+    
+
+#________Distancia enemigo-jugador al matar a un enemigo________
+    distancias = distanciaKillEne(eventos)
+
+# El número de asesinatos con cada arma y su ratio de efectividad (asesinatos/ataque).
+    usos = [contUsoCuchillo, contUsoPistola]
+    asesinatos= [contKillsCuchillo, contKillsPistola]
+
+    ruta = os.path.join(rutaSave, 'metricas.txt')
+
+    with open(ruta, 'w') as file:
+        #________Número de veces que el jugador cambia de arma________
+        print("N CAMBIOS DE ARMAS: ",len(eventos['CHANGE_WEAPON']), file=file)
+
+        print("Tiempo cuchillo: ", cuchilloTiempo, "s", file=file)
+        print("Tiempo pistola: ", pistolaTiempo, "s" , file=file)
+        print("USO DE CUCHILLO: ",contUsoCuchillo, file=file)
+        print("USO DE PISTOLA: ",contUsoPistola, file=file)
+        print("KILLS TOTALES: ", killsTotales, file=file)
+        print("KILLS CON CUCHILLO: ",contKillsCuchillo, "Porcentaje: " , (contKillsCuchillo/killsTotales)*100, "%", file=file)
+        print("KILLS CON PISTOLA: ",contKillsPistola, "Porcentaje: " , (contKillsPistola/killsTotales)*100, "%", file=file)
+        print("KILLS DE ENEMIGOS: ", contKillsDeEnemigos, file=file)
+        print("DEADS TOTALES: ", deadsTotales, file=file)
+        print("DEAD CON ENEMIGO: ",contDeadEnemigo, "Porcentaje: " , porcentajesTiposDeMuertes[0], "%", file=file)
+        print("DEAD CON LASER: ",contDeadLaser, "Porcentaje: " , porcentajesTiposDeMuertes[1], "%", file=file)
+        print("DEAD CON SUICIDIO: ",contDeadLaser, "Porcentaje: " , porcentajesTiposDeMuertes[2], "%", file=file)
+        print("TIEMPO AIMING: ",aimingTiempo, "s", file=file)
+        if(contUsoCuchillo == 0):
+            print('Efectividad cuchillo:', 0, "%", file=file)
+        else:
+            print('Efectividad cuchillo:', (contKillsCuchillo/contUsoCuchillo)*100, "%", file=file)
+        if(contUsoPistola == 0):
+            print('Efectividad pistola:', 0, "%", file=file)
+        else:
+            print('Efectividad pistola:', (contKillsPistola/contUsoPistola)*100, "%", file=file)
+    
+
+#-----------------------------------------------------------------------------------------
+#-----------------------------------FIN CALCULO DE METRICAS-------------------------------
+#-----------------------------------------------------------------------------------------    
+
+
+# #-----------------------------------------------------------------------------------------
+# #-------------------------------------DATOS VISUALES--------------------------------------
+# #-----------------------------------------------------------------------------------------
+    tiposArmas = ["CUCHILLO","PISTOLA"]
+    tiposMuertes = ["ENEMIGO","LASER","SUICIDIO"]
+    colors = ['#ef476f', '#00b4d8', '#f2e8cf']
+
+    # Mostrar el porcentaje del uso total de cada arma en el tiempo
+    tiempoArmas = cuchilloTiempo + pistolaTiempo    # Deberia ser el tiempo total
+    porcentajesTiemposArmas = [(cuchilloTiempo/tiempoArmas) * 100, (pistolaTiempo/tiempoArmas) * 100] 
+    graficoCircular('Porcentaje del uso de cada arma en el tiempo', porcentajesTiemposArmas, tiposArmas, colors, rutaSave)
+
+    # Las veces con las que se ataca con cada arma
+    vecesUsoArmas = contUsoCuchillo + contUsoPistola   
+    porcentajesUsoArmas = [(contUsoCuchillo/vecesUsoArmas) * 100, (contUsoPistola/vecesUsoArmas) * 100] 
+    graficoCircular('Porcentaje de ataque con cada arma', porcentajesUsoArmas, tiposArmas, colors, rutaSave)
+    
+
+    # Gráfico distancias y arma
+    dPistola = []
+    dCuchillo= []
+    for d in distancias:
+        if d['Arma'] == 'PISTOL':
+            dPistola.append(d['Dist'])
+        elif d['Arma'] == 'KNIFE':
+            dCuchillo.append(d['Dist'])
+
+    plt.bar(dPistola, dPistola, color = 'red', width=0.015, alpha=0.8, label= 'Pistola')
+    plt.bar(dCuchillo, dCuchillo, color = 'blue', width=0.015, alpha=0.5, label= 'Cuchillo')
+    plt.xlabel('Distancia en unidades métricas del juego')
+    plt.ylabel('Distancia en unidades métricas del juego')
+    plt.title('Distancias de las kills y arma usada')
+    plt.legend(loc='best')
+    ruta = os.path.join(rutaSave, 'Distancias_de_las_kills_y_arma_usada.png')
+    if SAVE:
+        plt.savefig(ruta)
+        plt.clf()  # limpiar figura
+    else:
+        plt.show()
+
+    # Tipos de muertes
+    graficoCircular('Causas de muertes del jugador', porcentajesTiposDeMuertes, tiposMuertes, colors, rutaSave)
+
+    # MAPA DE CALOR TODAS LAS MUERTES
+    heatMapDeads(eventos, rutaSave)
+    # MAPA DE CALOR CON LAS MUERTES DE ENEMIGOS
+    heatMapDeads(eventos, rutaSave, "ENEMY")
+    # MAPA DE CALOR CON LAS MUERTES DE LASERES
+    heatMapDeads(eventos, rutaSave, "LASER")
+
+def obtenerMetricas(datos, rutaSave):
+    eventos = {
+    "INI_SESSION": [],
+    "END_SESSION": [],
+    "INI_LVL": [],
+    "END_LVL": [],
+    "CHANGE_WEAPON": [],
+    "POS_PLAYER_ATTACK": [],
+    "POS_PLAYER_KILL": [],
+    "POS_PLAYER_DEAD": [],
+    "PRESS_BUTTON": [],
+    "POS_ENEMY_DEAD": [],
+    "POS_ENEMY_KILL": [],
+    "AIMING": [],
+    "NOT_AIMING": []
+    }   
     # Guardar todos los eventos segun el tipo
     for evento in datos:
         eventos[evento["tipo"]].append(evento)
@@ -668,6 +836,7 @@ def obtenerMetricas(datos, rutaSave):
     heatMapDeads(eventos, rutaSave, "LASER")
 
     # timelineUsoArmas(eventos)
+    return cuchilloTiempo, pistolaTiempo
 #-----------------------------------------------------------------------------------------
 #-----------------------------------FIN DATOS VISUALES------------------------------------
 #-----------------------------------------------------------------------------------------
