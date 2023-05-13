@@ -2,30 +2,60 @@ import csv
 import ftfy
 import matplotlib.pyplot as plt
 from collections import Counter
+array_build_A = []
+array_build_B = []
+abundanciaMunicion = []
+balances_armas_build_A = []
+balances_armas_build_B = []
+intuicion_apuntado = []
+frenetismo_apuntado = []
+dificultad_enemigos_build_A = []
+dificultad_enemigos_build_B = []
+municion_build_A = []
+municion_build_B = []
+frustracion_laser_build_A = []
+frustracion_laser_build_B = []
+dificultad_build_A = []
+dificultad_build_B = []
 
-with open('Datos/encuesta_entrevista.csv', newline='') as archivo_csv:
-    array_build_A = []
-    array_build_B = []
-    #Variable para la abundancia de munición en el mapa
-    lector_csv = csv.reader(archivo_csv)
-    next(lector_csv)
-    for columna in lector_csv:
-        build = columna[3]
-        fila = columna[5:23]
-        fila_sin_tildes = list(map(ftfy.fix_text, fila))
-        if build == "A":
-            array_build_A.append(fila_sin_tildes)
-        elif build == "B":
-            array_build_B.append(fila_sin_tildes)
+
+
+
+def initData():
+    with open('Datos/encuesta_entrevista.csv', newline='') as archivo_csv:
+        #Variable para la abundancia de munición en el mapa
+        lector_csv = csv.reader(archivo_csv)
+        next(lector_csv)
+        for columna in lector_csv:
+            build = columna[3]
+            fila = columna[5:23]
+            fila_sin_tildes = list(map(ftfy.fix_text, fila))
+            if build == "A":
+                array_build_A.append(fila_sin_tildes)
+            elif build == "B":
+                array_build_B.append(fila_sin_tildes)
+    for i in array_build_A:
+        abundanciaMunicion.append(int(i[0]))
+        balances_armas_build_A.append(int(i[1]))
+        intuicion_apuntado.append(int(i[2]))
+        frenetismo_apuntado.append(int(i[3]))
+        dificultad_enemigos_build_A.append(int(i[4]))
+        municion_build_A.append(int(i[10]))
+        frustracion_laser_build_A.append(int(i[13]))
+        dificultad_build_A.append(int(i[15]))
+
+    for i in array_build_B:
+        abundanciaMunicion.append(int(i[0]))
+        balances_armas_build_B.append(int(i[1]))
+        intuicion_apuntado.append(int(i[2]))
+        frenetismo_apuntado.append(int(i[3]))
+        dificultad_enemigos_build_B.append(int(i[4]))
+        municion_build_B.append(int(i[10]))
+        frustracion_laser_build_B.append(int(i[13]))
+        dificultad_build_B.append(int(i[15]))
 
 
 def grafica_municion():
-    abundanciaMunicion = []
-    #Guardamos en la lista las respuestas
-    for index in array_build_A:
-        abundanciaMunicion.append(int(index[0]))  # Agregar el primer elemento convertido a entero a la lista "data"
-    for index in array_build_B:
-        abundanciaMunicion.append(int(index[0]))  # Agregar el primer elemento convertido a entero a la lista "data"
     # Crear la figura y los ejes
     frecuencias=dict(Counter(abundanciaMunicion))
     frecuenas_ordenadas = sorted(frecuencias.keys())
@@ -54,17 +84,10 @@ def grafica_municion():
     plt.show()
 
 def grafica_balance_armas():
-    armas_build_A = []
-    armas_build_B = []
     #Guardamos en la lista las respuestas
-    for index in array_build_A:
-        armas_build_A.append(index[1])  # Agregar el primer elemento convertido a entero a la lista "data"
-    for index in array_build_B:
-        armas_build_B.append(index[1])  # Agregar el primer elemento convertido a entero a la lista "data"
-
     # Crear la figura y los ejes
-    frecuencias_build_A=dict(Counter(armas_build_A))
-    frecuencias_build_B=dict(Counter(armas_build_B))
+    frecuencias_build_A=dict(Counter(balances_armas_build_A))
+    frecuencias_build_B=dict(Counter(balances_armas_build_B))
     frecuencias_build_A_ordenadas = sorted(frecuencias_build_A.keys())
     frecuencias_build_B_ordenadas = sorted(frecuencias_build_B.keys())
 
@@ -96,16 +119,6 @@ def grafica_balance_armas():
     plt.show()
 
 def grafica_apuntado_pistola():
-    intuicion_apuntado = []
-    frenetismo_apuntado = []
-    #Guardamos en la lista las respuestas
-    for index in array_build_A:
-        intuicion_apuntado.append(int(index[2]))  
-        frenetismo_apuntado.append(int(index[3]))
-    for index in array_build_B:
-        intuicion_apuntado.append(int(index[2]))  
-        frenetismo_apuntado.append(int(index[3])) 
-
     # Crear la figura y los ejes
     frecuencias_intuicion=dict(Counter(intuicion_apuntado))
     frecuencias_frenetismo=dict(Counter(frenetismo_apuntado))
@@ -152,17 +165,9 @@ def grafica_apuntado_pistola():
     plt.show()
 
 def grafica_dificultad_enemigos():
-    enemigos_build_A = []
-    enemigos_build_B = []
-    #Guardamos en la lista las respuestas
-    for index in array_build_A:
-        enemigos_build_A.append(index[4])
-    for index in array_build_B:
-        enemigos_build_B.append(index[4]) 
 
- 
-    frecuencias_build_A=dict(Counter(enemigos_build_A))
-    frecuencias_build_B=dict(Counter(enemigos_build_B))
+    frecuencias_build_A=dict(Counter(dificultad_enemigos_build_A))
+    frecuencias_build_B=dict(Counter(dificultad_enemigos_build_B))
     frecuancias_build_A_ordenadas = sorted(frecuencias_build_A.keys())
     frecuancias_build_B_ordenadas = sorted(frecuencias_build_B.keys())
     etiquetas_build_A = []
@@ -209,13 +214,6 @@ def grafica_dificultad_enemigos():
     plt.show()
 
 def grafica_economizacion_municion():
-    municion_build_A = []
-    municion_build_B = []
-    #Guardamos en la lista las respuestas
-    for index in array_build_A:
-        municion_build_A.append(index[10])  # Agregar el primer elemento convertido a entero a la lista "data"
-    for index in array_build_B:
-        municion_build_B.append(index[10])  # Agregar el primer elemento convertido a entero a la lista "data"
 
     # Crear la figura y los ejes
     frecuencias_build_A=dict(Counter(municion_build_A))
@@ -250,17 +248,9 @@ def grafica_economizacion_municion():
     plt.show()
 
 def grafica_frustracion_laser():
-    frustracion_build_A = []
-    frustracion_build_B = []
-    #Guardamos en la lista las respuestas
-    for index in array_build_A:
-        frustracion_build_A.append(index[13])  # Agregar el primer elemento convertido a entero a la lista "data"
-    for index in array_build_B:
-        frustracion_build_B.append(index[13])  # Agregar el primer elemento convertido a entero a la lista "data"
-
     # Crear la figura y los ejes
-    frecuencias_build_A=dict(Counter(frustracion_build_A))
-    frecuencias_build_B=dict(Counter(frustracion_build_B))
+    frecuencias_build_A=dict(Counter(frustracion_laser_build_A))
+    frecuencias_build_B=dict(Counter(frustracion_laser_build_B))
     etiquetas_build_A = []
     etiquetas_build_B = []
     frecuancias_build_A_ordenadas = sorted(frecuencias_build_A.keys())
@@ -287,14 +277,6 @@ def grafica_frustracion_laser():
     plt.show()
 
 def grafica_dificultad_enemigos_laseres():
-    dificultad_build_A = []
-    dificultad_build_B = []
-    #Guardamos en la lista las respuestas
-    for index in array_build_A:
-        dificultad_build_A.append(index[15])  # Agregar el primer elemento convertido a entero a la lista "data"
-    for index in array_build_B:
-        dificultad_build_B.append(index[15])  # Agregar el primer elemento convertido a entero a la lista "data"
-
     # Crear la figura y los ejes
     frecuencias_build_A=dict(Counter(dificultad_build_A))
     frecuencias_build_B=dict(Counter(dificultad_build_B))
