@@ -401,12 +401,6 @@ def main():
                 # datos.extend(datosAux)  # Añadir los datos de este archivo a la lista de datos totales
             # Hacer algo con el contenido del archivo
 
-    # # Leer datos de archivos json
-    # with open('./Datos/BAVictor.json', 'r') as f:
-    #     datos = json.load(f)
-       
-    # EVENTOS DE LA TELEMETRÍA
-    # obtenerMetricas(datos)
 
 def obtenerMetricas(datos, rutaSave):
     eventos = {

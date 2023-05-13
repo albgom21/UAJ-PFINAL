@@ -3,8 +3,7 @@ import ftfy
 import matplotlib.pyplot as plt
 from collections import Counter
 
-
-with open('b.csv', newline='') as archivo_csv:
+with open('Datos/encuesta_entrevista.csv', newline='') as archivo_csv:
     array_build_A = []
     array_build_B = []
     #Variable para la abundancia de munición en el mapa
@@ -323,6 +322,8 @@ def grafica_dificultad_enemigos_laseres():
     ax[1].set_title('¿Por qué ha sentido el jugador más peligro? - BUILD B')
     ax[1].pie(frecuencias_build_B.values(), labels=etiquetas_build_B,autopct='%1.1f%%', startangle=90)
     plt.show()
+
+
 grafica_municion()
 grafica_balance_armas()
 grafica_apuntado_pistola()
