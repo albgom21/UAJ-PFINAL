@@ -33,29 +33,28 @@ def initData():
                 array_build_A.append(fila_sin_tildes)
             elif build == "B":
                 array_build_B.append(fila_sin_tildes)
+
     for i in array_build_A:
         abundanciaMunicion.append(int(i[0]))
-        balances_armas_build_A.append(int(i[1]))
+        balances_armas_build_A.append(i[1])
         intuicion_apuntado.append(int(i[2]))
         frenetismo_apuntado.append(int(i[3]))
         dificultad_enemigos_build_A.append(int(i[4]))
-        municion_build_A.append(int(i[10]))
-        frustracion_laser_build_A.append(int(i[13]))
-        dificultad_build_A.append(int(i[15]))
-        uso_apuntado_build_A.append(int(i[16]))
-
+        municion_build_A.append(i[10])
+        frustracion_laser_build_A.append(i[13])
+        dificultad_build_A.append(i[15])
+        uso_apuntado_build_A.append(i[16])
 
     for i in array_build_B:
         abundanciaMunicion.append(int(i[0]))
-        balances_armas_build_B.append(int(i[1]))
+        balances_armas_build_B.append(i[1])
         intuicion_apuntado.append(int(i[2]))
         frenetismo_apuntado.append(int(i[3]))
         dificultad_enemigos_build_B.append(int(i[4]))
-        municion_build_B.append(int(i[10]))
-        frustracion_laser_build_B.append(int(i[13]))
-        dificultad_build_B.append(int(i[15]))
-        uso_apuntado_build_B.append(int(i[16]))
-
+        municion_build_B.append(i[10])
+        frustracion_laser_build_B.append(i[13])
+        dificultad_build_B.append(i[15])
+        uso_apuntado_build_B.append(i[16])
 
 def grafica_municion():
     # Crear la figura y los ejes
@@ -110,12 +109,12 @@ def grafica_balance_armas():
             etiquetas_build_B.append("No")
         else:
             etiquetas_build_B.append("Depende de las circustancias")
-            
+
     fig, ax = plt.subplots(2)
 
     ax[0].set_title('¿Consideras que el cuchillo está balanceado en comparación a la pistola? - BUILD A')
     ax[0].pie(frecuencias_build_A.values(), labels=etiquetas_build_A,autopct='%1.1f%%', startangle=90)
-    
+
     ax[1].set_title('¿Consideras que el cuchillo está balanceado en comparación a la pistola? - BUILD B')
     ax[1].pie(frecuencias_build_B.values(), labels=etiquetas_build_B,autopct='%1.1f%%', startangle=90)
     plt.show()
@@ -154,12 +153,12 @@ def grafica_apuntado_pistola():
             etiquetas_frenetismo.append("4 bastante frenético")
         else:
             etiquetas_frenetismo.append("5 muy frenético")
-        
+
     fig, ax = plt.subplots(2)
     ax[0].set_title('Intuición apuntado pistola')
     ax[0].bar(etiquetas_intuicion,  height=frecuencias_intuicion.values())
     ax[0].set_xlabel('Intuición')
-    ax[0].set_ylabel('Número de personas')    
+    ax[0].set_ylabel('Número de personas')
     ax[1].set_title('Frenetismo apuntado pistola')
     ax[1].bar(etiquetas_frenetismo,  height=frecuencias_frenetismo.values())
     ax[1].set_xlabel('Frenetismo')
@@ -167,52 +166,19 @@ def grafica_apuntado_pistola():
     plt.show()
 
 def grafica_dificultad_enemigos():
-
-    frecuencias_build_A=dict(Counter(dificultad_enemigos_build_A))
-    frecuencias_build_B=dict(Counter(dificultad_enemigos_build_B))
-    frecuancias_build_A_ordenadas = sorted(frecuencias_build_A.keys())
-    frecuancias_build_B_ordenadas = sorted(frecuencias_build_B.keys())
-    etiquetas_build_A = []
-    etiquetas_build_B = []
-    for valor in frecuancias_build_A_ordenadas:
-        if valor == "0":
-            etiquetas_build_A.append("0 Nula dificultad")
-        elif valor == "1":
-            etiquetas_build_A.append("1 Poca dificultad")
-        elif valor == "2":
-            etiquetas_build_A.append("2 Algo de dificultad")
-        elif valor == "3":
-            etiquetas_build_A.append("3 Bastante dificultad")
-        elif valor == "4":
-            etiquetas_build_A.append("4 Mucha dificultad")
-        else:
-            etiquetas_build_A.append("5 Dificultad extrema")
-
-    for valor in frecuancias_build_B_ordenadas:
-        if valor == "0":
-            etiquetas_build_B.append("0 Nula dificultad")
-        elif valor == "1":
-            etiquetas_build_B.append("1 Poca dificultad")
-        elif valor == "2":
-            etiquetas_build_B.append("2 Algo de dificultad")
-        elif valor == "3":
-            etiquetas_build_B.append("3 Bastante dificultad")
-        elif valor == "4":
-            etiquetas_build_B.append("4 Mucha dificultad")
-        else:
-            etiquetas_build_B.append("5 Dificultad extrema")
-            
+    frecuencias_build_A= [0,0,0,0,0,0]
+    frecuencias_build_B= [0,0,0,0,0,0]
     fig, ax = plt.subplots(2)
-
-    ax[0].set_title('¿Cuál ha sido la dificultad para eliminar enemigos? - BUILD A')
-    ax[0].bar(etiquetas_build_A,  height=frecuencias_build_A.values())
-    ax[0].set_xlabel('Dificultad')
-    ax[0].set_ylabel('Número de personas')
+    etiquetas = ["0 Nula dificultad", "1 Poca dificultad", "2 Algo de dificultad", "3 Bastante dificultad", "4 Mucha dificultad", "5 Dificultad extrema"]
+    for d in dificultad_enemigos_build_A:
+        frecuencias_build_A[d] = frecuencias_build_A[d]+1
+    for d in dificultad_enemigos_build_B:
+        frecuencias_build_B[d] = frecuencias_build_B[d]+1
     
+    ax[0].set_title('¿Cuál ha sido la dificultad para eliminar enemigos? - BUILD A')
+    ax[0].bar(etiquetas,  height=frecuencias_build_A)
     ax[1].set_title('¿Cuál ha sido la dificultad para eliminar enemigos? - BUILD B')
-    ax[1].bar(etiquetas_build_B,  height=frecuencias_build_B.values())
-    ax[1].set_xlabel('Dificultad')
-    ax[1].set_ylabel('Número de personas')
+    ax[1].bar(etiquetas,  height=frecuencias_build_B)
     plt.show()
 
 def grafica_economizacion_municion():
@@ -239,12 +205,12 @@ def grafica_economizacion_municion():
             etiquetas_build_B.append("No")
         else:
             etiquetas_build_B.append("Uso nulo de la pistola")
-            
+
     fig, ax = plt.subplots(2)
 
     ax[0].set_title('¿El jugador ha economizado la munición que tenía? - BUILD A')
     ax[0].pie(frecuencias_build_A.values(), labels=etiquetas_build_A,autopct='%1.1f%%', startangle=90)
-    
+
     ax[1].set_title('¿El jugador ha economizado la munición que tenía? - BUILD B')
     ax[1].pie(frecuencias_build_B.values(), labels=etiquetas_build_B,autopct='%1.1f%%', startangle=90)
     plt.show()
@@ -262,18 +228,18 @@ def grafica_frustracion_laser():
             etiquetas_build_A.append("Sí")
         else:
             etiquetas_build_A.append("No")
-       
+
     for valor in frecuancias_build_B_ordenadas:
         if valor == "Sí":
             etiquetas_build_B.append("Sí")
         else:
             etiquetas_build_B.append("No")
-            
+
     fig, ax = plt.subplots(2)
 
     ax[0].set_title('¿Se ha frustrado el jugador por los láseres? - BUILD A')
     ax[0].pie(frecuencias_build_A.values(), labels=etiquetas_build_A,autopct='%1.1f%%', startangle=90)
-    
+
     ax[1].set_title('¿Se ha frustrado el jugador por los láseres? - BUILD B')
     ax[1].pie(frecuencias_build_B.values(), labels=etiquetas_build_B,autopct='%1.1f%%', startangle=90)
     plt.show()
@@ -291,27 +257,27 @@ def grafica_dificultad_enemigos_laseres():
             etiquetas_build_A.append("Enemigos")
         else:
             etiquetas_build_A.append("Láseres")
-       
+
     for valor in frecuancias_build_B_ordenadas:
         if valor == "Enemigos":
             etiquetas_build_B.append("Enemigos")
         else:
             etiquetas_build_B.append("Láseres")
-            
+
     fig, ax = plt.subplots(2)
 
     ax[0].set_title('¿Por qué ha sentido el jugador más peligro? - BUILD A')
     ax[0].pie(frecuencias_build_A.values(), labels=etiquetas_build_A,autopct='%1.1f%%', startangle=90)
-    
+
     ax[1].set_title('¿Por qué ha sentido el jugador más peligro? - BUILD B')
     ax[1].pie(frecuencias_build_B.values(), labels=etiquetas_build_B,autopct='%1.1f%%', startangle=90)
     plt.show()
 
-
-grafica_municion()
-grafica_balance_armas()
-grafica_apuntado_pistola()
+initData()
+# grafica_municion()
+# grafica_balance_armas()
+# grafica_apuntado_pistola()
 grafica_dificultad_enemigos()
-grafica_economizacion_municion()
-grafica_frustracion_laser()
-grafica_dificultad_enemigos_laseres()
+# grafica_economizacion_municion()
+# grafica_frustracion_laser()
+# grafica_dificultad_enemigos_laseres()
