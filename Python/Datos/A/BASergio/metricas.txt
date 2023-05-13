@@ -10,7 +10,7 @@ KILLS DE ENEMIGOS:  7
 DEADS TOTALES:  16
 DEAD CON ENEMIGO:  7 Porcentaje:  43.75 %
 DEAD CON LASER:  8 Porcentaje:  50.0 %
-DEAD CON SUICIDIO:  8 Porcentaje:  6.25 %
+DEAD CON SUICIDIO:  1 Porcentaje:  6.25 %
 TIEMPO AIMING:  0 s
 Efectividad cuchillo: 61.016949152542374 %
 Efectividad pistola: 44.44444444444444 %

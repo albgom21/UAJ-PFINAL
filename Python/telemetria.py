@@ -9,6 +9,20 @@ import numpy as np
 
 SAVE = True
 
+# Pos 0 del Array = BUILD A
+# Pos 1 del Array = BUILD B
+
+porcentajesTiemposArmasBuilds= []
+cuchilloTiempoBuilds = []
+pistolaTiempoBuilds = []
+contKillsCuchilloBuilds = []
+contKillsPistolaBuilds = []
+distanciasBuilds = []
+contDeadEnemigoBuilds = []
+contDeadLaserBuilds = []
+contSuicidiosBuilds = []
+porcentajesTiposDeMuertesBuilds = []
+
 #____________METODOS PARA EXTRAER METRICAS____________
 
 def distanciaKillEne(eventos):
@@ -371,46 +385,65 @@ def timelineApuntadoPistola(eventos):
     fig.update_layout(font=dict(size=20))
     fig.show()
 
-def main():
-    build= 'A'
-    # Para leer todos los json de una carpeta
-    # Carpeta donde se encuentran los archivos JSON
-    carpetaJsons = './Datos/'+build+'/jsons'
-    carpeta = './Datos/'+build+'/'
+def initData():
+    builds= ['A', 'B']
+    for b in builds:
+        # Para leer todos los json de una carpeta
+        # Carpeta donde se encuentran los archivos JSON
+        carpetaJsons = './Datos/'+b+'/jsons'
+        carpeta = './Datos/'+b+'/'
 
-    datos = []
-    allDatos = []
+        datos = []
+        allDatos = []
 
-    cuchilloTiempoTotal = 0
-    pistolaTiempoTotal = 0
-    # Recorrer todos los archivos en la carpeta
-    for archivo in os.listdir(carpetaJsons):
-        if archivo.endswith('.json'):
-            # Obtener el nombre del archivo y la extensión
-            nombre_archivo, extension = os.path.splitext(archivo)
-            
-            # Crear una carpeta con el nombre del archivo
-            carpeta_archivo = os.path.join(carpeta, nombre_archivo)
-            os.makedirs(carpeta_archivo, exist_ok=True)
-            
-            # Obtener la ruta relativa a la carpeta del archivo
-            ruta_relativa = os.path.relpath(carpeta_archivo)
+        cuchilloTiempoTotal = 0
+        pistolaTiempoTotal = 0
+        # Recorrer todos los archivos en la carpeta
+        for archivo in os.listdir(carpetaJsons):
+            if archivo.endswith('.json'):
+                # Obtener el nombre del archivo y la extensión
+                nombre_archivo, extension = os.path.splitext(archivo)
+                
+                # Crear una carpeta con el nombre del archivo
+                carpeta_archivo = os.path.join(carpeta, nombre_archivo)
+                os.makedirs(carpeta_archivo, exist_ok=True)
+                
+                # Obtener la ruta relativa a la carpeta del archivo
+                ruta_relativa = os.path.relpath(carpeta_archivo)
 
-            # Abrir el archivo JSON y leer su contenido
-            with open(os.path.join(carpetaJsons, archivo), 'r') as f:
-                datos = json.load(f)
-                ctt, ptt = obtenerMetricas(datos, ruta_relativa)
-                cuchilloTiempoTotal += ctt
-                pistolaTiempoTotal += ptt
-                allDatos.append(datos)  # Añadir los datos de este archivo a la lista de datos totales
-            
-    # PARA TODOS LOS DATOS DE LAS BUILDS
-    # Obtener la ruta relativa a la carpeta del archivo
-    carpeta_archivo = os.path.join(carpeta, 'All')
-    os.makedirs(carpeta_archivo, exist_ok=True)
-    ruta_relativa = os.path.relpath(carpeta_archivo)
-    obtenerMetricasBuild(allDatos, ruta_relativa, cuchilloTiempoTotal, pistolaTiempoTotal)
+                # Abrir el archivo JSON y leer su contenido
+                with open(os.path.join(carpetaJsons, archivo), 'r') as f:
+                    datos = json.load(f)
+                    ctt, ptt = obtenerMetricas(datos, ruta_relativa)
+                    cuchilloTiempoTotal += ctt
+                    pistolaTiempoTotal += ptt
+                    allDatos.append(datos)  # Añadir los datos de este archivo a la lista de datos totales
+                
+        # PARA TODOS LOS DATOS DE LAS BUILDS
+        # Obtener la ruta relativa a la carpeta del archivo
+        carpeta_archivo = os.path.join(carpeta, 'All')
+        os.makedirs(carpeta_archivo, exist_ok=True)
+        ruta_relativa = os.path.relpath(carpeta_archivo)
 
+        posArray = 0
+        if b == 'A':
+            posArray = 0
+        elif b == 'B':
+            posArray = 1
+
+        dataAux = []
+        dataAux = obtenerMetricasBuild(allDatos, ruta_relativa, cuchilloTiempoTotal, pistolaTiempoTotal)
+
+        porcentajesTiemposArmasBuilds.append(dataAux[0])
+        cuchilloTiempoBuilds.append(dataAux[1])
+        pistolaTiempoBuilds.append(dataAux[2])
+        contKillsCuchilloBuilds.append(dataAux[3])
+        contKillsPistolaBuilds.append(dataAux[4])
+        distanciasBuilds.append(dataAux[5])
+        contDeadEnemigoBuilds.append(dataAux[6])
+        contDeadLaserBuilds.append(dataAux[7])
+        contSuicidiosBuilds.append(dataAux[8])
+        porcentajesTiposDeMuertesBuilds.append(dataAux[9])
 
 def obtenerMetricasBuild(datos, rutaSave, cuchilloTiempoTotal, pistolaTiempoTotal):
     eventos = {
@@ -504,7 +537,7 @@ def obtenerMetricasBuild(datos, rutaSave, cuchilloTiempoTotal, pistolaTiempoTota
         print("DEADS TOTALES: ", deadsTotales, file=file)
         print("DEAD CON ENEMIGO: ",contDeadEnemigo, "Porcentaje: " , porcentajesTiposDeMuertes[0], "%", file=file)
         print("DEAD CON LASER: ",contDeadLaser, "Porcentaje: " , porcentajesTiposDeMuertes[1], "%", file=file)
-        print("DEAD CON SUICIDIO: ",contDeadLaser, "Porcentaje: " , porcentajesTiposDeMuertes[2], "%", file=file)
+        print("DEAD CON SUICIDIO: ",suicidios, "Porcentaje: " , porcentajesTiposDeMuertes[2], "%", file=file)
         print("TIEMPO AIMING: ",aimingTiempo, "s", file=file)
         if(contUsoCuchillo == 0):
             print('Efectividad cuchillo:', 0, "%", file=file)
@@ -514,8 +547,6 @@ def obtenerMetricasBuild(datos, rutaSave, cuchilloTiempoTotal, pistolaTiempoTota
             print('Efectividad pistola:', 0, "%", file=file)
         else:
             print('Efectividad pistola:', (contKillsPistola/contUsoPistola)*100, "%", file=file)
-    
-
 #-----------------------------------------------------------------------------------------
 #-----------------------------------FIN CALCULO DE METRICAS-------------------------------
 #-----------------------------------------------------------------------------------------    
@@ -570,6 +601,8 @@ def obtenerMetricasBuild(datos, rutaSave, cuchilloTiempoTotal, pistolaTiempoTota
     heatMapDeads(eventos, rutaSave, "ENEMY")
     # MAPA DE CALOR CON LAS MUERTES DE LASERES
     heatMapDeads(eventos, rutaSave, "LASER")
+
+    return porcentajesTiemposArmas, cuchilloTiempo, pistolaTiempo, contKillsCuchillo, contKillsPistola, distancias, contDeadEnemigo, contDeadLaser, suicidios, porcentajesTiposDeMuertes
 
 def obtenerMetricas(datos, rutaSave):
     eventos = {
@@ -659,7 +692,7 @@ def obtenerMetricas(datos, rutaSave):
         print("DEADS TOTALES: ", deadsTotales, file=file)
         print("DEAD CON ENEMIGO: ",contDeadEnemigo, "Porcentaje: " , porcentajesTiposDeMuertes[0], "%", file=file)
         print("DEAD CON LASER: ",contDeadLaser, "Porcentaje: " , porcentajesTiposDeMuertes[1], "%", file=file)
-        print("DEAD CON SUICIDIO: ",contDeadLaser, "Porcentaje: " , porcentajesTiposDeMuertes[2], "%", file=file)
+        print("DEAD CON SUICIDIO: ",suicidios, "Porcentaje: " , porcentajesTiposDeMuertes[2], "%", file=file)
         print("TIEMPO AIMING: ",aimingTiempo, "s", file=file)
         if(contUsoCuchillo == 0):
             print('Efectividad cuchillo:', 0, "%", file=file)
@@ -840,6 +873,3 @@ def obtenerMetricas(datos, rutaSave):
 #-----------------------------------------------------------------------------------------
 #-----------------------------------FIN DATOS VISUALES------------------------------------
 #-----------------------------------------------------------------------------------------
-
-
-main()
