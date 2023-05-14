@@ -19,6 +19,8 @@ dificultad_build_A = []
 dificultad_build_B = []
 uso_apuntado_build_A = []
 uso_apuntado_build_B = []
+uso_armas_build_A=[]
+uso_armas_build_B=[]
 COLORS = ['#ef476f', '#00b4d8', '#f2e8cf', '#06d6a0', '#118ab2', '#ffcdb2']
 DIFFICULTY_COLORS = ['#ebb9ff', '#a06bff','#7c3aed', '#ff52b4', '#ff2052', '#9b1b30']
 
@@ -46,6 +48,7 @@ def initData():
         frustracion_laser_build_A.append(i[13])
         dificultad_build_A.append(i[15])
         uso_apuntado_build_A.append(i[16])
+        uso_armas_build_A.append(i[9])
 
     for i in array_build_B:
         abundancia_municion.append(int(i[0]))
@@ -57,6 +60,7 @@ def initData():
         frustracion_laser_build_B.append(i[13])
         dificultad_build_B.append(i[15])
         uso_apuntado_build_B.append(i[16])
+        uso_armas_build_B.append(i[9])
 
 def grafica_municion():
     # Inicializar etiquetas y alturas de la gráfica
@@ -218,11 +222,38 @@ def grafica_dificultad_enemigos_laseres():
     ax[1].pie(frecuencias_build_B, labels=etiquetas, autopct='%1.1f%%', startangle=90, colors = COLORS)
     plt.show()
 
+def grafica_uso_armas():
+    # Inicializar etiquetas y frecuencias de la gráfica
+    frecuencias_build_A=[0,0, 0]
+    frecuencias_build_B=[0,0,0]
+    for i in uso_armas_build_A:
+        if(i == "Cuchillo"):
+            frecuencias_build_A[0] = frecuencias_build_A[0]+1
+        elif(i=="Pistola"): frecuencias_build_A[1] = frecuencias_build_A[1]+1
+        else: frecuencias_build_A[2]=frecuencias_build_A[2]+1
+    
+    for i in uso_armas_build_B:
+        if(i == "Cuchillo"):
+            frecuencias_build_B[0] = frecuencias_build_B[0]+1
+        elif(i=="Pistola"): frecuencias_build_B[1] = frecuencias_build_B[1]+1
+        else: frecuencias_build_B[2]=frecuencias_build_B[2]+1
+    etiquetas = ["Cuchillo", "Pistola", "Ambas"]
+
+    # Crear el gráfico pie
+    fig, ax = plt.subplots(2)
+    ax[0].set_title('¿Qué arma has usado más? - BUILD A')
+    ax[0].pie(frecuencias_build_A, labels=etiquetas, autopct='%1.1f%%', startangle=90, colors = COLORS)
+
+    ax[1].set_title('¿Qué arma has usado más? - BUILD B')
+    ax[1].pie(frecuencias_build_B, labels=etiquetas, autopct='%1.1f%%', startangle=90, colors = COLORS)
+    plt.show()
+
 initData()
-# grafica_municion()
-# grafica_balance_armas()
-# grafica_apuntado_pistola()
-# grafica_dificultad_enemigos()
-# grafica_economizacion_municion()
-# grafica_frustracion_laser()
-# grafica_dificultad_enemigos_laseres()
+grafica_municion()
+grafica_balance_armas()
+grafica_apuntado_pistola()
+grafica_dificultad_enemigos()
+grafica_economizacion_municion()
+grafica_frustracion_laser()
+grafica_dificultad_enemigos_laseres()
+grafica_uso_armas()
