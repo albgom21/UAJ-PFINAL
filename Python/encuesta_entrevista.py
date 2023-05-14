@@ -5,7 +5,7 @@ from collections import Counter
 import numpy as np
 
 # Variables globales
-SHOW = False
+SHOW = True
 COLORS = ['#ef476f', '#00b4d8', '#f2e8cf', '#06d6a0', '#118ab2', '#ffcdb2']
 DIFFICULTY_COLORS = ['#ebb9ff', '#a06bff','#7c3aed', '#ff52b4', '#ff2052', '#9b1b30']
 
@@ -25,23 +25,24 @@ economizacion_municion_build_A = []
 economizacion_municion_build_B = []
 frustracion_laser_build_A = []
 frustracion_laser_build_B = []
-dificultad_build_A = []
-dificultad_build_B = []
+dificultad_enemigo_laserbuild_A = []
+dificultad_enemigo_laser_build_B = []
 uso_apuntado_build_A = []
 uso_apuntado_build_B = []
 uso_armas_build_A=[]
 uso_armas_build_B=[]
 
-# Arrays de porcentajes
+# Arrays de porcentajes y medias
 porcentaje_balance_armas_build_A=[] # Sí -> [0] No -> [1] Depende de las circunstancias -> [2] 
 porcentaje_balance_armas_build_B=[]
 porcentaje_uso_armas_build_A = [] # Cuchillo -> [0] Pistola -> [1] Ambas -> [2]
 porcentaje_uso_armas_build_B = []
 porcentaje_dificultad_enemigo_laser_build_A = [] # Enemigos -> [0] Láseres -> [1]
 porcentaje_dificultad_enemigo_laser_build_B = []
+media_dificultad_enemigos_build_A = 0
+media_dificultad_enemigos_build_B = 0
 
-def initData(show):
-    SHOW = show
+def initData():
     with open('Datos/encuesta_entrevista.csv', newline='') as archivo_csv:
         #Variable para la abundancia de munición en el mapa
         lector_csv = csv.reader(archivo_csv)
@@ -63,7 +64,7 @@ def initData(show):
         dificultad_enemigos_build_A.append(int(i[4]))
         economizacion_municion_build_A.append(i[10])
         frustracion_laser_build_A.append(i[13])
-        dificultad_build_A.append(i[15])
+        dificultad_enemigo_laserbuild_A.append(i[15])
         uso_apuntado_build_A.append(i[16])
         uso_armas_build_A.append(i[9])
 
@@ -75,13 +76,13 @@ def initData(show):
         dificultad_enemigos_build_B.append(int(i[4]))
         economizacion_municion_build_B.append(i[10])
         frustracion_laser_build_B.append(i[13])
-        dificultad_build_B.append(i[15])
+        dificultad_enemigo_laser_build_B.append(i[15])
         uso_apuntado_build_B.append(i[16])
         uso_armas_build_B.append(i[9])
     
-    grafica_municion()
-    grafica_balance_armas()
-    grafica_apuntado_pistola()
+    # grafica_municion()
+    # grafica_balance_armas()
+    # grafica_apuntado_pistola()
     grafica_dificultad_enemigos()
     grafica_economizacion_municion()
     grafica_frustracion_laser()
@@ -175,6 +176,8 @@ def grafica_dificultad_enemigos():
         frecuencias_build_A[d] = frecuencias_build_A[d]+1
     for d in dificultad_enemigos_build_B:
         frecuencias_build_B[d] = frecuencias_build_B[d]+1
+    media_dificultad_enemigos_build_A = np.sum(dificultad_enemigos_build_A) / len(dificultad_enemigos_build_A)
+    media_dificultad_enemigos_build_B = np.sum(dificultad_enemigos_build_B) / len(dificultad_enemigos_build_B)
     
     if(SHOW == False):
        return
@@ -248,12 +251,12 @@ def grafica_dificultad_enemigos_laseres():
     # Inicializar etiquetas y frecuencias de la gráfica
     frecuencias_build_A=[0,0]
     frecuencias_build_B=[0,0]
-    for i in dificultad_build_A:
+    for i in dificultad_enemigo_laserbuild_A:
         if(i == "Enemigos"):
             frecuencias_build_A[0] = frecuencias_build_A[0]+1
         else: frecuencias_build_A[1] = frecuencias_build_A[1]+1
     
-    for i in dificultad_build_B:
+    for i in dificultad_enemigo_laser_build_B:
         if(i == "Enemigos"):
             frecuencias_build_B[0] = frecuencias_build_B[0]+1
         else: frecuencias_build_B[1] = frecuencias_build_B[1]+1    
@@ -311,4 +314,4 @@ def grafica_uso_armas():
     ax[1].pie(frecuencias_build_B, labels=etiquetas, autopct='%1.1f%%', startangle=90, colors = COLORS)
     plt.show()
 
-initData(False)
+initData()
