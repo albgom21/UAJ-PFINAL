@@ -12,7 +12,7 @@ SAVE = True
 # Pos 0 del Array = BUILD A
 # Pos 1 del Array = BUILD B
 
-porcentajesTiemposArmasBuilds= []
+porcentajesTiemposArmasBuilds= [] # Cuchillo->[0]  Pistola->[1] 
 cuchilloTiempoBuilds = []
 pistolaTiempoBuilds = []
 contKillsCuchilloBuilds = []
@@ -21,7 +21,8 @@ distanciasBuilds = []
 contDeadEnemigoBuilds = []
 contDeadLaserBuilds = []
 contSuicidiosBuilds = []
-porcentajesTiposDeMuertesBuilds = []
+porcentajesTiposDeMuertesBuilds = []  # Enemigo->[0]  Laser->[1]  Suicidio->[2] 
+apuntadoTiempoBuilds = []
 
 #____________METODOS PARA EXTRAER METRICAS____________
 
@@ -444,6 +445,7 @@ def initData():
         contDeadLaserBuilds.append(dataAux[7])
         contSuicidiosBuilds.append(dataAux[8])
         porcentajesTiposDeMuertesBuilds.append(dataAux[9])
+        apuntadoTiempoBuilds.append(dataAux[10])
 
 def obtenerMetricasBuild(datos, rutaSave, cuchilloTiempoTotal, pistolaTiempoTotal):
     eventos = {
@@ -602,7 +604,7 @@ def obtenerMetricasBuild(datos, rutaSave, cuchilloTiempoTotal, pistolaTiempoTota
     # MAPA DE CALOR CON LAS MUERTES DE LASERES
     heatMapDeads(eventos, rutaSave, "LASER")
 
-    return porcentajesTiemposArmas, cuchilloTiempo, pistolaTiempo, contKillsCuchillo, contKillsPistola, distancias, contDeadEnemigo, contDeadLaser, suicidios, porcentajesTiposDeMuertes
+    return porcentajesTiemposArmas, cuchilloTiempo, pistolaTiempo, contKillsCuchillo, contKillsPistola, distancias, contDeadEnemigo, contDeadLaser, suicidios, porcentajesTiposDeMuertes, aimingTiempo
 
 def obtenerMetricas(datos, rutaSave):
     eventos = {
