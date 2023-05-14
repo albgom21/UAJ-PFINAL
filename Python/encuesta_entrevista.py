@@ -5,7 +5,7 @@ from collections import Counter
 import numpy as np
 
 # Variables globales
-SHOW = True
+SHOW = False
 COLORS = ['#ef476f', '#00b4d8', '#f2e8cf', '#06d6a0', '#118ab2', '#ffcdb2']
 DIFFICULTY_COLORS = ['#ebb9ff', '#a06bff','#7c3aed', '#ff52b4', '#ff2052', '#9b1b30']
 
@@ -37,6 +37,8 @@ porcentaje_balance_armas_build_A=[] # Sí -> [0] No -> [1] Depende de las circun
 porcentaje_balance_armas_build_B=[]
 porcentaje_uso_armas_build_A = [] # Cuchillo -> [0] Pistola -> [1] Ambas -> [2]
 porcentaje_uso_armas_build_B = []
+porcentaje_dificultad_enemigo_laser_build_A = [] # Enemigos -> [0] Láseres -> [1]
+porcentaje_dificultad_enemigo_laser_build_B = []
 
 def initData(show):
     SHOW = show
@@ -94,6 +96,8 @@ def grafica_municion():
         frecuencias[i] = frecuencias[i]+1
     etiquetas = ["Muy escasa", "Bastante escasa", "Escasa", "Abundante", "Bastante abundante", "Muy abundante"]
     
+    if(SHOW == False):
+        return
     # Crear el gráfico de barras
     plt.title('Cantidad de munición a lo largo de los niveles')
     plt.bar(etiquetas, height=frecuencias, color=DIFFICULTY_COLORS)
@@ -117,6 +121,7 @@ def grafica_balance_armas():
             frecuencias_build_B[1] = frecuencias_build_B[1]+1
         else: frecuencias_build_B[2] = frecuencias_build_B[2]+1
     etiquetas = ["Sí", "No", "Depende de las circustancias"]
+    
     total_A = np.sum(frecuencias_build_A)
     for i in range(len(frecuencias_build_A)):
         porcentaje_balance_armas_build_A.append(frecuencias_build_A[i]/total_A*100)
@@ -254,6 +259,13 @@ def grafica_dificultad_enemigos_laseres():
         else: frecuencias_build_B[1] = frecuencias_build_B[1]+1    
     etiquetas = ["Enemigos", "Láseres"]
 
+    total_A = np.sum(frecuencias_build_A)
+    for i in range(len(frecuencias_build_A)):
+        porcentaje_dificultad_enemigo_laser_build_A.append(frecuencias_build_A[i]/total_A*100)
+    total_B = np.sum(frecuencias_build_B)
+    for i in range(len(frecuencias_build_B)):
+        porcentaje_dificultad_enemigo_laser_build_B.append(frecuencias_build_B[i]/total_B*100)
+    
     if(SHOW == False):
         return
     # Crear el gráfico pie
@@ -299,4 +311,4 @@ def grafica_uso_armas():
     ax[1].pie(frecuencias_build_B, labels=etiquetas, autopct='%1.1f%%', startangle=90, colors = COLORS)
     plt.show()
 
-initData(True)
+initData(False)
