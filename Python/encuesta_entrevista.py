@@ -23,6 +23,10 @@ uso_armas_build_A=[]
 uso_armas_build_B=[]
 COLORS = ['#ef476f', '#00b4d8', '#f2e8cf', '#06d6a0', '#118ab2', '#ffcdb2']
 DIFFICULTY_COLORS = ['#ebb9ff', '#a06bff','#7c3aed', '#ff52b4', '#ff2052', '#9b1b30']
+frecuencias_balances_armas_build_A=[0,0,0]
+frecuencias_balances_armas_build_B=[0,0,0]
+
+
 
 def initData():
     with open('Datos/encuesta_entrevista.csv', newline='') as archivo_csv:
@@ -61,6 +65,19 @@ def initData():
         dificultad_build_B.append(i[15])
         uso_apuntado_build_B.append(i[16])
         uso_armas_build_B.append(i[9])
+    
+    for i in balances_armas_build_A:
+        if(i == "Sí"):
+            frecuencias_balances_armas_build_A[0] = frecuencias_balances_armas_build_A[0]+1
+        elif(i == "No"):
+            frecuencias_balances_armas_build_A[1] = frecuencias_balances_armas_build_A[1]+1
+        else: frecuencias_balances_armas_build_A[2] = frecuencias_balances_armas_build_A[2]+1    
+    for i in balances_armas_build_B:
+        if(i == "Sí"):
+            frecuencias_balances_armas_build_B[0] = frecuencias_balances_armas_build_B[0]+1
+        elif(i == "No"):
+            frecuencias_balances_armas_build_B[1] = frecuencias_balances_armas_build_B[1]+1
+        else: frecuencias_balances_armas_build_B[2] = frecuencias_balances_armas_build_B[2]+1
 
 def grafica_municion():
     # Inicializar etiquetas y alturas de la gráfica
