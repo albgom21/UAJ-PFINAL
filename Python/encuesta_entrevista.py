@@ -5,7 +5,7 @@ from collections import Counter
 import numpy as np
 
 # Variables globales
-SHOW = False
+SAVE = True
 COLORS = ['#ef476f', '#00b4d8', '#f2e8cf', '#06d6a0', '#118ab2', '#ffcdb2']
 DIFFICULTY_COLORS = ['#ebb9ff', '#a06bff','#7c3aed', '#ff52b4', '#ff2052', '#9b1b30']
 
@@ -43,6 +43,8 @@ media_dificultad_enemigos_build_A = 0
 media_dificultad_enemigos_build_B = 0
 porcentaje_uso_apuntado_build_A = [] # Sí -> [0] No -> [1]
 porcentaje_uso_apuntado_build_B = []
+
+ruta = "./Datos/GraficasEncuestaEntrevista/"
 
 def initData():
     with open('Datos/encuesta_entrevista.csv', newline='') as archivo_csv:
@@ -117,12 +119,14 @@ def grafica_municion():
         frecuencias[i] = frecuencias[i]+1
     etiquetas = ["Muy escasa", "Bastante escasa", "Escasa", "Abundante", "Bastante abundante", "Muy abundante"]
     
-    if(SHOW == False):
-        return
     # Crear el gráfico de barras
     plt.title('Cantidad de munición a lo largo de los niveles')
     plt.bar(etiquetas, height=frecuencias, color=DIFFICULTY_COLORS)
-    plt.show()
+    if SAVE:
+        plt.savefig(ruta+'grafica_municion.png')
+        plt.clf()  # limpiar figura
+    else:
+        plt.show()
 
 def grafica_balance_armas():
     # Inicializar etiquetas y frecuencias de la gráfica
@@ -150,8 +154,6 @@ def grafica_balance_armas():
     for i in range(len(frecuencias_build_B)):
         porcentaje_balance_armas_build_B.append(frecuencias_build_A[i]/total_B*100)
 
-    if(SHOW == False):
-       return
     # Crear el gráfico pie
     fig, ax = plt.subplots(2)
     ax[0].set_title('¿Consideras que el cuchillo está balanceado en comparación a la pistola? - BUILD A')
@@ -159,7 +161,11 @@ def grafica_balance_armas():
 
     ax[1].set_title('¿Consideras que el cuchillo está balanceado en comparación a la pistola? - BUILD B')
     ax[1].pie(frecuencias_build_B, labels=etiquetas,autopct='%1.1f%%', startangle=90, colors=COLORS)
-    plt.show()
+    if SAVE:
+        plt.savefig(ruta+'grafica_balance_armas.png')
+        plt.clf()  # limpiar figura
+    else:
+        plt.show()
 
 def grafica_apuntado_pistola():
     # Inicializar etiquetas y alturas de la gráfica
@@ -172,7 +178,7 @@ def grafica_apuntado_pistola():
     etiquetas_intuicion = ["Nada intuitivo", "Muy poco intuitivo", "Poco intuitivo", "Algo intuitivo", "Bastante intuitivo", "Muy intuitivo"]
     etiquetas_frentismo = ["Nada frenético", "Muy poco frenético", "Poco frenético", "Algo frenético", "Bastante frenético", "Muy frenético"]
 
-    if(SHOW == False):
+    if(SAVE == False):
        return
     # Crear el gráfico de barras
     fig, ax = plt.subplots(2)
@@ -185,7 +191,11 @@ def grafica_apuntado_pistola():
     ax[1].bar(etiquetas_frentismo,  height=frecuencias_frenetismo, color=DIFFICULTY_COLORS)
     ax[1].set_xticklabels(etiquetas_frentismo, rotation=45, fontsize=8)
     ax[1].set_ylabel('Número de personas')
-    plt.show()
+    if SAVE:
+        plt.savefig(ruta+'grafica_apuntado_pistola.png')
+        plt.clf()  # limpiar figura
+    else:
+        plt.show()
 
 def grafica_dificultad_enemigos():
     frecuencias_build_A= [0,0,0,0,0,0]
@@ -199,13 +209,17 @@ def grafica_dificultad_enemigos():
     media_dificultad_enemigos_build_A = np.sum(dificultad_enemigos_build_A) / len(dificultad_enemigos_build_A)
     media_dificultad_enemigos_build_B = np.sum(dificultad_enemigos_build_B) / len(dificultad_enemigos_build_B)
     
-    if(SHOW == False):
+    if(SAVE == False):
        return
     ax[0].set_title('¿Cuál ha sido la dificultad para eliminar enemigos? - BUILD A')
     ax[0].bar(etiquetas,  height=frecuencias_build_A, color = DIFFICULTY_COLORS)
     ax[1].set_title('¿Cuál ha sido la dificultad para eliminar enemigos? - BUILD B')
     ax[1].bar(etiquetas,  height=frecuencias_build_B, color = DIFFICULTY_COLORS)
-    plt.show()
+    if SAVE:
+        plt.savefig(ruta+'grafica_dificultad_enemigos.png')
+        plt.clf()  # limpiar figura
+    else:
+        plt.show()
 
 def grafica_economizacion_municion():
     # Inicializar etiquetas y frecuencias de la gráfica
@@ -226,7 +240,7 @@ def grafica_economizacion_municion():
         else: frecuencias_build_B[2] = frecuencias_build_B[2]+1    
     etiquetas = ["Sí", "No", "Uso nulo de la pistola"]
 
-    if(SHOW == False):
+    if(SAVE == False):
        return
     # Crear el gráfico pie
     fig, ax = plt.subplots(2)
@@ -235,7 +249,11 @@ def grafica_economizacion_municion():
 
     ax[1].set_title('¿El jugador ha economizado la munición que tenía? - BUILD B')
     ax[1].pie(frecuencias_build_B, labels=etiquetas, autopct='%1.1f%%', startangle=90, colors = COLORS)
-    plt.show()
+    if SAVE:
+        plt.savefig(ruta+'grafica_economizacion_municion.png')
+        plt.clf()  # limpiar figura
+    else:
+        plt.show()
 
 def grafica_frustracion_laser():
     # Inicializar etiquetas y frecuencias de la gráfica
@@ -256,7 +274,7 @@ def grafica_frustracion_laser():
         else: frecuencias_build_B[2] = frecuencias_build_B[2]+1    
     etiquetas = ["Sí", "No"]
    
-    if(SHOW == False):
+    if(SAVE == False):
        return
     # Crear el gráfico pie
     fig, ax = plt.subplots(2)
@@ -265,7 +283,11 @@ def grafica_frustracion_laser():
 
     ax[1].set_title('¿Se ha frustrado el jugador por los láseres? - BUILD B')
     ax[1].pie(frecuencias_build_B, labels=etiquetas, autopct='%1.1f%%', startangle=90, colors = COLORS)
-    plt.show()
+    if SAVE:
+        plt.savefig(ruta+'grafica_frustracion_laser.png')
+        plt.clf()  # limpiar figura
+    else:
+        plt.show()
 
 def grafica_dificultad_enemigos_laseres():
     # Inicializar etiquetas y frecuencias de la gráfica
@@ -289,7 +311,7 @@ def grafica_dificultad_enemigos_laseres():
     for i in range(len(frecuencias_build_B)):
         porcentaje_dificultad_enemigo_laser_build_B.append(frecuencias_build_B[i]/total_B*100)
     
-    if(SHOW == False):
+    if(SAVE == False):
         return
     # Crear el gráfico pie
     fig, ax = plt.subplots(2)
@@ -298,7 +320,11 @@ def grafica_dificultad_enemigos_laseres():
 
     ax[1].set_title('¿Por qué ha sentido el jugador más peligro? - BUILD B')
     ax[1].pie(frecuencias_build_B, labels=etiquetas, autopct='%1.1f%%', startangle=90, colors = COLORS)
-    plt.show()
+    if SAVE:
+        plt.savefig(ruta+'grafica_dificultad_enemigos_laseres.png')
+        plt.clf()  # limpiar figura
+    else:
+        plt.show()
 
 def grafica_uso_armas():
     # Inicializar etiquetas y frecuencias de la gráfica
@@ -323,7 +349,7 @@ def grafica_uso_armas():
     total_B = np.sum(frecuencias_build_B)
     for i in range(len(frecuencias_build_B)):
         porcentaje_uso_armas_build_B.append(frecuencias_build_A[i]/total_B*100)
-    if(SHOW == False):
+    if(SAVE == False):
         return
     # Crear el gráfico pie
     fig, ax = plt.subplots(2)
@@ -332,6 +358,11 @@ def grafica_uso_armas():
 
     ax[1].set_title('¿Qué arma has usado más? - BUILD B')
     ax[1].pie(frecuencias_build_B, labels=etiquetas, autopct='%1.1f%%', startangle=90, colors = COLORS)
-    plt.show()
+    if SAVE:
+        plt.savefig(ruta+'grafica_uso_armas.png')
+        plt.clf()  # limpiar figura
+    else:
+        plt.show()
 
-# initData()
+
+initData()
