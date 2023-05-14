@@ -35,6 +35,8 @@ uso_armas_build_B=[]
 # Arrays de porcentajes
 porcentaje_balance_armas_build_A=[] # Sí -> [0] No -> [1] Depende de las circunstancias -> [2] 
 porcentaje_balance_armas_build_B=[]
+porcentaje_uso_armas_build_A = [] # Cuchillo -> [0] Pistola -> [1] Ambas -> [2]
+porcentaje_uso_armas_build_B = []
 
 def initData(show):
     SHOW = show
@@ -279,7 +281,13 @@ def grafica_uso_armas():
         elif(i=="Pistola"): frecuencias_build_B[1] = frecuencias_build_B[1]+1
         else: frecuencias_build_B[2]=frecuencias_build_B[2]+1
     etiquetas = ["Cuchillo", "Pistola", "Ambas"]
-
+    
+    total_A = np.sum(frecuencias_build_A)
+    for i in range(len(frecuencias_build_A)):
+        porcentaje_uso_armas_build_A.append(frecuencias_build_A[i]/total_A*100)
+    total_B = np.sum(frecuencias_build_B)
+    for i in range(len(frecuencias_build_B)):
+        porcentaje_uso_armas_build_B.append(frecuencias_build_A[i]/total_B*100)
     if(SHOW == False):
         return
     # Crear el gráfico pie
