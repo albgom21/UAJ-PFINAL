@@ -291,7 +291,7 @@ def timelineUsoArmas(eventos):
 
 def timelineApuntadoPistola(eventos):
  # Creamos una lista de eventos de prueba
-    aux = eventos["CHANGE_WEAPON"] + eventos["POS_PLAYER_DEAD"] + eventos["INI_LVL"] + eventos["END_LVL"] + eventos["AIMING"] + eventos["NOT_AIMING"]
+    aux = eventos["CHANGE_WEAPON"] + eventos["POS_PLAYER_DEAD"] + eventos["INI_LVL"] + eventos["END_SESSION"] + eventos["AIMING"] + eventos["NOT_AIMING"]
     
     y_values = []
     x_values = []
@@ -303,8 +303,9 @@ def timelineApuntadoPistola(eventos):
             x_values.append(evento.get('timestamp'))
             actualWeapon = "KNIFE"
 
-        elif(evento.get('tipo') == "END_LVL"):
+        elif(evento.get('tipo') == "END_SESSION"):
             x_values.append(evento.get('timestamp'))
+            y_values.append("cuchillo")
 
         elif(evento.get('tipo') == "AIMING"):
             x_values.append(evento.get('timestamp'))
