@@ -135,10 +135,10 @@ def heatMapDeads(eventos,rutaSave,tipoMuerte=None):
     y = [m[1] for m in muertes]
 
     # Crear la figura y los ejes
-    fig, ax = plt.subplots(figsize=(10, 10))
+    fig, ax = plt.subplots(figsize=(9, 9))
 
     # Crear el mapa de calor
-    hb = ax.hexbin(x, y, gridsize=30, cmap='plasma', linewidths=.5, mincnt=1, alpha=0.95)
+    hb = ax.hexbin(x, y, gridsize=25, cmap='plasma', linewidths=.5, mincnt=1, alpha=0.95)
 
     # Agregar la imagen como fondo
     ax.imshow(img, extent=[limiteXneg, limiteXpos, limiteYneg, limiteYpos], aspect='auto',)
@@ -150,7 +150,8 @@ def heatMapDeads(eventos,rutaSave,tipoMuerte=None):
     ax.set_ylim([limiteYneg, limiteYpos])
 
     # Agregar la barra de colores
-    cb = plt.colorbar(hb)
+    cb = plt.colorbar(hb, label='Muertes')
+
     # Establecer el formato de los ticks para que solo muestre valores enteros
     cb.ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%d'))
 
@@ -173,6 +174,7 @@ def heatMapDeads(eventos,rutaSave,tipoMuerte=None):
         plt.show()
 
 def graficoCircular(titulo, datos, labels, colors, rutaSave):
+    fig = plt.figure(figsize=(6, 6))
     plt.pie(datos, labels=labels, colors=colors, autopct="%0.1f %%")
     plt.title(titulo)
     ruta = os.path.join(rutaSave, titulo+'.png')
@@ -599,12 +601,12 @@ def obtenerMetricasBuild(datos, rutaSave, cuchilloTiempoTotal, pistolaTiempoTota
     # Tipos de muertes
     graficoCircular('Causas de muertes del jugador', porcentajesTiposDeMuertes, tiposMuertes, colors, rutaSave)
 
+    # MAPA DE CALOR CON LAS MUERTES DE LASERES
+    heatMapDeads(eventos, rutaSave, "LASER")
     # MAPA DE CALOR TODAS LAS MUERTES
     heatMapDeads(eventos, rutaSave)
     # MAPA DE CALOR CON LAS MUERTES DE ENEMIGOS
     heatMapDeads(eventos, rutaSave, "ENEMY")
-    # MAPA DE CALOR CON LAS MUERTES DE LASERES
-    heatMapDeads(eventos, rutaSave, "LASER")
 
     return porcentajesTiemposArmas, cuchilloTiempo, pistolaTiempo, contKillsCuchillo, contKillsPistola, distancias, contDeadEnemigo, contDeadLaser, suicidios, porcentajesTiposDeMuertes, aimingTiempo
 
@@ -649,12 +651,10 @@ def obtenerMetricas(datos, rutaSave):
 
 #________Posición en la que muere el jugador cuando colisiona con láseres________
     posDeadLaser = [(evento['posX'], evento['posY']) for evento in filter(lambda e: e.get('dead') == 'LASER', eventos['POS_PLAYER_DEAD'])]
-    # print("POS DEAD CON LASER: ",posDeadLaser)
     
 #________Posición del enemigo al eliminar al jugador________
     posEnemigoKill = [(evento['posX'], evento['posY']) for evento in eventos['POS_ENEMY_KILL']]
     contKillsDeEnemigos = len(posEnemigoKill)
-    # print("POS KILL ENEMIGO: ", posEnemigoKill)
 
 #________Número de veces que el jugador muere por el disparo de un enemigo________
     contDeadEnemigo = sum(1 for evento in eventos['POS_PLAYER_DEAD']  if evento.get('dead') == 'ENEMY')
@@ -666,7 +666,6 @@ def obtenerMetricas(datos, rutaSave):
 
 #________Posición en la que el jugador muere por un enemigo________
     posDeadEnemigo = [(evento['posX'], evento['posY']) for evento in filter(lambda e: e.get('dead') == 'ENEMY', eventos['POS_PLAYER_DEAD'])]
-    # print("POS DEAD CON ENEMIGO: ",posDeadEnemigo)
 
 #________Tiempo medio que el jugador está apuntando con la pistola________
     aimingTiempo = tiempoApuntado(eventos)
@@ -730,8 +729,6 @@ def obtenerMetricas(datos, rutaSave):
     porcentajesUsoArmas = [(contUsoCuchillo/vecesUsoArmas) * 100, (contUsoPistola/vecesUsoArmas) * 100] 
     graficoCircular('Porcentaje de ataque con cada arma', porcentajesUsoArmas, tiposArmas, colors, rutaSave)
     
-    # Un timeline que recoja el uso de cada arma en el tiempo y con la información de la munición.
-
     # crear un gráfico de barras con dos series de datos
     x = range(len(tiposArmas))
     plt.bar([i - 0.2 for i in x], usos, width=0.3, align='center', label='Usos', color='#a8dadc')
@@ -872,7 +869,9 @@ def obtenerMetricas(datos, rutaSave):
     # MAPA DE CALOR CON LAS MUERTES DE LASERES
     heatMapDeads(eventos, rutaSave, "LASER")
 
-    #timelineUsoArmas(eventos)
+    # TIMELINE USO DE ARMAS
+    # timelineUsoArmas(eventos)
+
     return cuchilloTiempo, pistolaTiempo
 #-----------------------------------------------------------------------------------------
 #-----------------------------------FIN DATOS VISUALES------------------------------------

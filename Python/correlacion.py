@@ -156,7 +156,7 @@ with open('./CorrelacionBuilds.txt', 'w') as file:
         print(" TELEMETRIA: SI SE USA EL APUNTADO DE FORMA FRECUENTE", file=file)
         correlacionT = True
     else:
-        print(" TELEMETRIA: NO SE USA EL APUNTADO PRÁCTICAMENTE NADA", file=file)
+        print(" TELEMETRIA: NO SE USA EL APUNTADO PRACTICAMENTE NADA", file=file)
         correlacionT = False
 
     if (e.porcentaje_uso_apuntado_build_B[0] >= 50):
