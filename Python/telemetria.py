@@ -184,7 +184,7 @@ def graficoCircular(titulo, datos, labels, colors, rutaSave):
 
 def timelineUsoArmas(eventos):
  # Creamos una lista de eventos de prueba
-    aux = eventos["CHANGE_WEAPON"] + eventos["POS_PLAYER_DEAD"] + eventos["INI_LVL"] + eventos["END_LVL"]
+    aux = eventos["CHANGE_WEAPON"] + eventos["POS_PLAYER_DEAD"] + eventos["INI_LVL"] + eventos["END_SESSION"]
     
     y_values = []
     x_values = []
@@ -199,8 +199,10 @@ def timelineUsoArmas(eventos):
             actualAmmo = 5
             ammo_values.append(actualAmmo)
 
-        elif(evento.get('tipo') == "END_LVL"):
+        elif(evento.get('tipo') == "END_SESSION"):
             x_values.append(evento.get('timestamp'))
+            y_values.append("cuchillo")
+            ammo_values.append(actualAmmo)
 
         # Si ha muerto contabilizar el tiempo que llevaba segun el arma
         elif(evento.get('tipo') == "POS_PLAYER_DEAD"):
@@ -870,7 +872,7 @@ def obtenerMetricas(datos, rutaSave):
     # MAPA DE CALOR CON LAS MUERTES DE LASERES
     heatMapDeads(eventos, rutaSave, "LASER")
 
-    # timelineUsoArmas(eventos)
+    #timelineUsoArmas(eventos)
     return cuchilloTiempo, pistolaTiempo
 #-----------------------------------------------------------------------------------------
 #-----------------------------------FIN DATOS VISUALES------------------------------------
