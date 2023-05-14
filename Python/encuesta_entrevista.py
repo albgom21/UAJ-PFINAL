@@ -334,4 +334,4 @@ def grafica_uso_armas():
     ax[1].pie(frecuencias_build_B, labels=etiquetas, autopct='%1.1f%%', startangle=90, colors = COLORS)
     plt.show()
 
-initData()
+# initData()

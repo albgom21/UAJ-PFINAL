@@ -9,8 +9,8 @@ import numpy as np
 
 SAVE = True
 
-# Pos 0 del Array = BUILD A
-# Pos 1 del Array = BUILD B
+# Pos 0 de cualquier Array = BUILD A
+# Pos 1 de cualquier Array = BUILD B
 
 porcentajesTiemposArmasBuilds= [] # Cuchillo->[0]  Pistola->[1] 
 cuchilloTiempoBuilds = []
