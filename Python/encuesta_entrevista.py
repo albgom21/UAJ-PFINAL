@@ -2,17 +2,27 @@ import csv
 import ftfy
 import matplotlib.pyplot as plt
 from collections import Counter
+import numpy as np
+
+# Variables globales
+SHOW = True
+COLORS = ['#ef476f', '#00b4d8', '#f2e8cf', '#06d6a0', '#118ab2', '#ffcdb2']
+DIFFICULTY_COLORS = ['#ebb9ff', '#a06bff','#7c3aed', '#ff52b4', '#ff2052', '#9b1b30']
+
+# Matriz con los datos del csv divididos en builds
 array_build_A = []
 array_build_B = []
+
+# Arrays con los datos de las matrices
 abundancia_municion = []
 balances_armas_build_A = []
 balances_armas_build_B = []
-intuicion_apuntado = []
+intuicion_apuntado = [] # no sé
 frenetismo_apuntado = []
-dificultad_enemigos_build_A = []
-dificultad_enemigos_build_B = []
-municion_build_A = []
-municion_build_B = []
+dificultad_enemigos_build_A = [] # media
+dificultad_enemigos_build_B = [] # media
+economizacion_municion_build_A = [] 
+economizacion_municion_build_B = []
 frustracion_laser_build_A = []
 frustracion_laser_build_B = []
 dificultad_build_A = []
@@ -21,10 +31,13 @@ uso_apuntado_build_A = []
 uso_apuntado_build_B = []
 uso_armas_build_A=[]
 uso_armas_build_B=[]
-COLORS = ['#ef476f', '#00b4d8', '#f2e8cf', '#06d6a0', '#118ab2', '#ffcdb2']
-DIFFICULTY_COLORS = ['#ebb9ff', '#a06bff','#7c3aed', '#ff52b4', '#ff2052', '#9b1b30']
 
-def initData():
+# Arrays de porcentajes
+porcentaje_balance_armas_build_A=[] # Sí -> [0] No -> [1] Depende de las circunstancias -> [2] 
+porcentaje_balance_armas_build_B=[]
+
+def initData(show):
+    SHOW = show
     with open('Datos/encuesta_entrevista.csv', newline='') as archivo_csv:
         #Variable para la abundancia de munición en el mapa
         lector_csv = csv.reader(archivo_csv)
@@ -44,7 +57,7 @@ def initData():
         intuicion_apuntado.append(int(i[2]))
         frenetismo_apuntado.append(int(i[3]))
         dificultad_enemigos_build_A.append(int(i[4]))
-        municion_build_A.append(i[10])
+        economizacion_municion_build_A.append(i[10])
         frustracion_laser_build_A.append(i[13])
         dificultad_build_A.append(i[15])
         uso_apuntado_build_A.append(i[16])
@@ -56,11 +69,21 @@ def initData():
         intuicion_apuntado.append(int(i[2]))
         frenetismo_apuntado.append(int(i[3]))
         dificultad_enemigos_build_B.append(int(i[4]))
-        municion_build_B.append(i[10])
+        economizacion_municion_build_B.append(i[10])
         frustracion_laser_build_B.append(i[13])
         dificultad_build_B.append(i[15])
         uso_apuntado_build_B.append(i[16])
         uso_armas_build_B.append(i[9])
+    
+    grafica_municion()
+    grafica_balance_armas()
+    grafica_apuntado_pistola()
+    grafica_dificultad_enemigos()
+    grafica_economizacion_municion()
+    grafica_frustracion_laser()
+    grafica_dificultad_enemigos_laseres()
+    grafica_uso_armas()
+
 
 def grafica_municion():
     # Inicializar etiquetas y alturas de la gráfica
@@ -92,7 +115,15 @@ def grafica_balance_armas():
             frecuencias_build_B[1] = frecuencias_build_B[1]+1
         else: frecuencias_build_B[2] = frecuencias_build_B[2]+1
     etiquetas = ["Sí", "No", "Depende de las circustancias"]
+    total_A = np.sum(frecuencias_build_A)
+    for i in range(len(frecuencias_build_A)):
+        porcentaje_balance_armas_build_A.append(frecuencias_build_A[i]/total_A*100)
+    total_B = np.sum(frecuencias_build_B)
+    for i in range(len(frecuencias_build_B)):
+        porcentaje_balance_armas_build_B.append(frecuencias_build_A[i]/total_B*100)
 
+    if(SHOW == False):
+       return
     # Crear el gráfico pie
     fig, ax = plt.subplots(2)
     ax[0].set_title('¿Consideras que el cuchillo está balanceado en comparación a la pistola? - BUILD A')
@@ -113,6 +144,8 @@ def grafica_apuntado_pistola():
     etiquetas_intuicion = ["Nada intuitivo", "Muy poco intuitivo", "Poco intuitivo", "Algo intuitivo", "Bastante intuitivo", "Muy intuitivo"]
     etiquetas_frentismo = ["Nada frenético", "Muy poco frenético", "Poco frenético", "Algo frenético", "Bastante frenético", "Muy frenético"]
 
+    if(SHOW == False):
+       return
     # Crear el gráfico de barras
     fig, ax = plt.subplots(2)
     fig.subplots_adjust(hspace=0.8)
@@ -136,6 +169,8 @@ def grafica_dificultad_enemigos():
     for d in dificultad_enemigos_build_B:
         frecuencias_build_B[d] = frecuencias_build_B[d]+1
     
+    if(SHOW == False):
+       return
     ax[0].set_title('¿Cuál ha sido la dificultad para eliminar enemigos? - BUILD A')
     ax[0].bar(etiquetas,  height=frecuencias_build_A, color = DIFFICULTY_COLORS)
     ax[1].set_title('¿Cuál ha sido la dificultad para eliminar enemigos? - BUILD B')
@@ -146,14 +181,14 @@ def grafica_economizacion_municion():
     # Inicializar etiquetas y frecuencias de la gráfica
     frecuencias_build_A=[0,0,0]
     frecuencias_build_B=[0,0,0]
-    for i in municion_build_A:
+    for i in economizacion_municion_build_A:
         if(i == "Sí"):
             frecuencias_build_A[0] = frecuencias_build_A[0]+1
         elif(i == "No"):
             frecuencias_build_A[1] = frecuencias_build_A[1]+1
         else: frecuencias_build_A[2] = frecuencias_build_A[2]+1
     
-    for i in municion_build_B:
+    for i in economizacion_municion_build_B:
         if(i == "Sí"):
             frecuencias_build_B[0] = frecuencias_build_B[0]+1
         elif(i == "No"):
@@ -161,6 +196,8 @@ def grafica_economizacion_municion():
         else: frecuencias_build_B[2] = frecuencias_build_B[2]+1    
     etiquetas = ["Sí", "No", "Uso nulo de la pistola"]
 
+    if(SHOW == False):
+       return
     # Crear el gráfico pie
     fig, ax = plt.subplots(2)
     ax[0].set_title('¿El jugador ha economizado la munición que tenía? - BUILD A')
@@ -189,8 +226,10 @@ def grafica_frustracion_laser():
         else: frecuencias_build_B[2] = frecuencias_build_B[2]+1    
     etiquetas = ["Sí", "No"]
    
+    if(SHOW == False):
+       return
+    # Crear el gráfico pie
     fig, ax = plt.subplots(2)
-
     ax[0].set_title('¿Se ha frustrado el jugador por los láseres? - BUILD A')
     ax[0].pie(frecuencias_build_A, labels=etiquetas,autopct='%1.1f%%', startangle=90, colors = COLORS)
 
@@ -213,6 +252,8 @@ def grafica_dificultad_enemigos_laseres():
         else: frecuencias_build_B[1] = frecuencias_build_B[1]+1    
     etiquetas = ["Enemigos", "Láseres"]
 
+    if(SHOW == False):
+        return
     # Crear el gráfico pie
     fig, ax = plt.subplots(2)
     ax[0].set_title('¿Por qué ha sentido el jugador más peligro? - BUILD A')
@@ -239,6 +280,8 @@ def grafica_uso_armas():
         else: frecuencias_build_B[2]=frecuencias_build_B[2]+1
     etiquetas = ["Cuchillo", "Pistola", "Ambas"]
 
+    if(SHOW == False):
+        return
     # Crear el gráfico pie
     fig, ax = plt.subplots(2)
     ax[0].set_title('¿Qué arma has usado más? - BUILD A')
@@ -248,12 +291,4 @@ def grafica_uso_armas():
     ax[1].pie(frecuencias_build_B, labels=etiquetas, autopct='%1.1f%%', startangle=90, colors = COLORS)
     plt.show()
 
-initData()
-grafica_municion()
-grafica_balance_armas()
-grafica_apuntado_pistola()
-grafica_dificultad_enemigos()
-grafica_economizacion_municion()
-grafica_frustracion_laser()
-grafica_dificultad_enemigos_laseres()
-grafica_uso_armas()
+initData(True)
