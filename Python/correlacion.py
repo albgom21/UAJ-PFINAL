@@ -136,7 +136,17 @@ with open('./CorrelacionBuilds.txt', 'w') as file:
         print(" TELEMETRIA: NO SE USA EL APUNTADO PRÁCTICAMENTE NADA", file=file)
         correlacionT = False
 
-    # if (e.uso_apuntado_build_A[0])
+    if (e.porcentaje_uso_apuntado_build_A[0] >= 50):
+        print(" ENCUESTAS/ENTREVISTAS: SI SE USA EL APUNTADO DE FORMA FRECUENTE", file=file)
+        correlacionE = True
+    else:
+        print(" ENCUESTAS/ENTREVISTAS: NO SE USA EL APUNTADO DE FORMA FRECUENTE", file=file)
+        correlacionE = False
+
+    if correlacionT == correlacionE:
+        print(" EXISTE CORRELACION ENTRE AMBAS MEDICIONES", file=file)
+    else:
+        print(" NO EXISTE CORRELACION ENTRE AMBAS MEDICIONES", file=file)
 
     #--------------------------------------------------------------------------------
 
@@ -148,6 +158,13 @@ with open('./CorrelacionBuilds.txt', 'w') as file:
     else:
         print(" TELEMETRIA: NO SE USA EL APUNTADO PRÁCTICAMENTE NADA", file=file)
         correlacionT = False
+
+    if (e.porcentaje_uso_apuntado_build_B[0] >= 50):
+        print(" ENCUESTAS/ENTREVISTAS: SI SE USA EL APUNTADO DE FORMA FRECUENTE", file=file)
+        correlacionE = True
+    else:
+        print(" ENCUESTAS/ENTREVISTAS: NO SE USA EL APUNTADO DE FORMA FRECUENTE", file=file)
+        correlacionE = False
 
     if correlacionT == correlacionE:
         print(" EXISTE CORRELACION ENTRE AMBAS MEDICIONES", file=file)
