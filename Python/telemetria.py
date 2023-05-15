@@ -184,112 +184,7 @@ def graficoCircular(titulo, datos, labels, colors, rutaSave):
     else:
         plt.show()
 
-def timelineUsoArmas(eventos):
- # Creamos una lista de eventos de prueba
-    aux = eventos["CHANGE_WEAPON"] + eventos["POS_PLAYER_DEAD"] + eventos["INI_LVL"] + eventos["END_SESSION"]
-    
-    y_values = []
-    x_values = []
-    ammo_values = []
-
-    aux = sorted(aux, key=lambda k: k['timestamp'])
-    for evento in aux:
-        if(evento.get('tipo') == "INI_LVL"):
-            y_values.append("cuchillo")
-            x_values.append(evento.get('timestamp'))
-            actualWeapon = "KNIFE"
-            actualAmmo = 5
-            ammo_values.append(actualAmmo)
-
-        elif(evento.get('tipo') == "END_SESSION"):
-            x_values.append(evento.get('timestamp'))
-            y_values.append("cuchillo")
-            ammo_values.append(actualAmmo)
-
-        # Si ha muerto contabilizar el tiempo que llevaba segun el arma
-        elif(evento.get('tipo') == "POS_PLAYER_DEAD"):
-            if(actualWeapon == "PISTOL" or actualAmmo < 5):
-                x_values.append(evento.get('timestamp'))
-                actualWeapon = "KNIFE"
-                y_values.append("cuchillo")
-                actualAmmo = 5
-                ammo_values.append(actualAmmo)
-
-        # Teniendo la pistola cambio a cuchillo
-        elif(evento.get('tipo') == "CHANGE_WEAPON" and evento.get('weapon') == 'KNIFE') and actualWeapon == "PISTOL":
-            actualWeapon = "KNIFE"
-            x_values.append(evento.get('timestamp'))
-            y_values.append("cuchillo")
-            ammo_values.append(evento.get('ammo'))
-            actualAmmo = evento.get('ammo')
-        # Teniendo el cuchillo cambio a pistola
-        elif(evento.get('tipo') == "CHANGE_WEAPON" and evento.get('weapon') == 'PISTOL') and actualWeapon == "KNIFE":
-            actualWeapon = "PISTOL"
-            x_values.append(evento.get('timestamp'))
-            y_values.append("pistola")
-            ammo_values.append(evento.get('ammo'))
-            actualAmmo = evento.get('ammo')
-
-    aux = x_values[0]
-    x_values_end = x_values.copy()
-    colors1 = y_values.copy()
-
-    #Dependiendo de y_values, se le asigna un color a colors1
-    for x in range(len(y_values)):
-        if y_values[x] == 'pistola':
-            colors1[x] = 'Pistola'
-        elif y_values[x] == 'cuchillo':
-            colors1[x] = 'Cuchillo'
-        else:
-            colors1[x] = 'black'
-
-    for x in range(len(x_values)):
-        if x < len(x_values) - 1:
-            totalSegundos = x_values[x + 1] - aux
-            minutos = totalSegundos // 60
-            segundos = totalSegundos % 60
-
-            x_values_end[x] = pd.to_datetime(f'{minutos}:{segundos}', format='%M:%S')
-        else:
-            totalSegundos = x_values[x] - aux
-            minutos = totalSegundos // 60
-            segundos = totalSegundos % 60
-
-            x_values_end[x] = pd.to_datetime(f'{minutos}:{segundos}', format='%M:%S')
-        if(x_values[x] != aux):
-            totalSegundos = x_values[x] - aux
-            minutos = totalSegundos // 60
-            segundos = totalSegundos % 60
-
-            x_values[x] = pd.to_datetime(f'{minutos}:{segundos}', format='%M:%S')
-        else:
-            totalSegundos = x_values[x] - aux
-            minutos = totalSegundos // 60
-            segundos = totalSegundos % 60
-
-            x_values[x] = pd.to_datetime(f'{minutos}:{segundos}', format='%M:%S')
-
-    auxData = pd.DataFrame()
-
-    #dar a auxdata los valores de x_values y y_values
-    auxData['x_values'] = x_values
-    auxData['time_end'] = x_values_end
-    auxData['Armas'] = y_values
-    auxData['Leyenda'] = colors1
-    auxData['ammo'] = ammo_values
-
-    fig = px.timeline(auxData,
-                    x_start='x_values',
-                    x_end='time_end',
-                    y="Armas",
-                    text="ammo",
-                    color="Leyenda")
-
-    fig.update_layout(xaxis=dict(tickformat="%M:%Ss"))
-    fig.update_layout(font=dict(size=20))
-    fig.show()
-
-def timelineApuntadoPistola(eventos):
+def timelineArmasyApuntado(eventos):
  # Creamos una lista de eventos de prueba
     aux = eventos["CHANGE_WEAPON"] + eventos["POS_PLAYER_DEAD"] + eventos["INI_LVL"] + eventos["END_SESSION"] + eventos["AIMING"] + eventos["NOT_AIMING"]
     
@@ -871,7 +766,7 @@ def obtenerMetricas(datos, rutaSave):
     heatMapDeads(eventos, rutaSave, "LASER")
 
     # TIMELINE USO DE ARMAS
-    # timelineUsoArmas(eventos)
+    # timelineArmasyApuntado(eventos)
 
     return cuchilloTiempo, pistolaTiempo
 #-----------------------------------------------------------------------------------------
