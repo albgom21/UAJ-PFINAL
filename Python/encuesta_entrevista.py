@@ -1,7 +1,6 @@
 import csv
 import ftfy
 import matplotlib.pyplot as plt
-from collections import Counter
 import numpy as np
 
 # Variables globales

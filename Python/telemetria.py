@@ -1,17 +1,17 @@
 import os
 import json
 import matplotlib.pyplot as plt
-import seaborn as sns
 import pandas as pd
 import plotly.express as px
 import matplotlib.ticker as ticker
-import numpy as np
 
-SAVE = True
+SAVE = True # Si es true guarda las imagenes, si es false las muestra
 
-# Pos 0 de cualquier Array = BUILD A
-# Pos 1 de cualquier Array = BUILD B
 
+
+# Variables globales para la correlacion
+#   Pos 0 de cualquier Array = BUILD A
+#   Pos 1 de cualquier Array = BUILD B
 porcentajesTiemposArmasBuilds= [] # Cuchillo->[0]  Pistola->[1] 
 cuchilloTiempoBuilds = []
 pistolaTiempoBuilds = []
@@ -26,6 +26,7 @@ apuntadoTiempoBuilds = []
 
 #____________METODOS PARA EXTRAER METRICAS____________
 
+# Devuelve un diccionario con la distancia y arma de las kills del jugador
 def distanciaKillEne(eventos):
     distanciasMatarEne = []
     # Comprobar que haya el mismo numero de muertes de enemigos que kills haya hecho el jugador
@@ -45,6 +46,7 @@ def distanciaKillEne(eventos):
                 distanciasMatarEne.append(info)
     return distanciasMatarEne        
  
+# Devuelve el tiempo que se ha apuntado en segundos
 def tiempoApuntado(eventos):
     aiming = False
     aimingTiempo = 0
@@ -64,6 +66,7 @@ def tiempoApuntado(eventos):
             aimingTiempo += evento.get('timestamp') - auxTiempo
     return aimingTiempo
 
+# Devuelve el uso del cuchillo y pistola en segundos
 def tiempoUsoArmas(eventos):
     auxTiempo = eventos["INI_SESSION"][0].get('timestamp')  # Tiempo de inicio
     actualWeapon = "KNIFE"                         # Arma actual 
@@ -109,10 +112,11 @@ def tiempoUsoArmas(eventos):
     elif(actualWeapon == "KNIFE"):
         cuchilloTiempo += lastTime - auxTiempo
       
-    return cuchilloTiempo,pistolaTiempo
+    return cuchilloTiempo, pistolaTiempo
 
 #____________METODOS PARA VISUALIZAR DATOS____________
 
+# Genera el mapa de calor de las las muerte segun el tipo de muerte 
 def heatMapDeads(eventos,rutaSave,tipoMuerte=None):
     '''
     tipoMuerte puede ser "ENEMY" o "LASER", si no se pone nada son ambas
@@ -173,6 +177,7 @@ def heatMapDeads(eventos,rutaSave,tipoMuerte=None):
     else:
         plt.show()
 
+# Genera el grafico circular de los datos suministrados y sus opciones
 def graficoCircular(titulo, datos, labels, colors, rutaSave):
     fig = plt.figure(figsize=(6, 6))
     plt.pie(datos, labels=labels, colors=colors, autopct="%0.1f %%")
@@ -184,6 +189,7 @@ def graficoCircular(titulo, datos, labels, colors, rutaSave):
     else:
         plt.show()
 
+# Genera un timeline con los tiempos en los que se usa cada arma y se utiliza el apuntado
 def timelineArmasyApuntado(eventos):
  # Creamos una lista de eventos de prueba
     aux = eventos["CHANGE_WEAPON"] + eventos["POS_PLAYER_DEAD"] + eventos["INI_LVL"] + eventos["END_SESSION"] + eventos["AIMING"] + eventos["NOT_AIMING"]
@@ -286,6 +292,7 @@ def timelineArmasyApuntado(eventos):
     fig.update_layout(font=dict(size=20))
     fig.show()
 
+#____________INICIALIZACION Y USO DE METODOS ANTERIORES____________
 def initData():
     builds= ['A', 'B']
     for b in builds:
@@ -325,13 +332,7 @@ def initData():
         carpeta_archivo = os.path.join(carpeta, 'All')
         os.makedirs(carpeta_archivo, exist_ok=True)
         ruta_relativa = os.path.relpath(carpeta_archivo)
-
-        posArray = 0
-        if b == 'A':
-            posArray = 0
-        elif b == 'B':
-            posArray = 1
-
+       
         dataAux = []
         dataAux = obtenerMetricasBuild(allDatos, ruta_relativa, cuchilloTiempoTotal, pistolaTiempoTotal)
 
@@ -766,7 +767,7 @@ def obtenerMetricas(datos, rutaSave):
     heatMapDeads(eventos, rutaSave, "LASER")
 
     # TIMELINE USO DE ARMAS
-    # timelineArmasyApuntado(eventos)
+    #timelineArmasyApuntado(eventos)
 
     return cuchilloTiempo, pistolaTiempo
 #-----------------------------------------------------------------------------------------
